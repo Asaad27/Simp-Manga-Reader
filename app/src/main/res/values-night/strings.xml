@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SimpMangaReader</string>
     <string name="browse">Browse</string>
     <string name="library">Library</string>
     <string name="recent">Recent</string>
