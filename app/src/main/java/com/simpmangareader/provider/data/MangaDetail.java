@@ -6,7 +6,26 @@ public class MangaDetail {
     String author;
     String artist;
     String genre;
+    String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(int thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
     MangaState state;
+    int thumbnail;
 
     public String getTitle() {
         return title;
