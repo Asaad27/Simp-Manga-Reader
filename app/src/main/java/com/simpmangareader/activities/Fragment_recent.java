@@ -1,13 +1,17 @@
 package com.simpmangareader.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.simpmangareader.R;
 import com.simpmangareader.provider.data.MangaDetail;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
+import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -75,9 +80,17 @@ public class Fragment_recent extends Fragment {
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
 
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), VERTICAL);
+        mRecyclerView.addItemDecoration(itemDecor);
+
+        this.configureOnClickRecyclerView();
+        this.configureOnLongClickRecyclerView();
+
 
         return rootView;
     }
+
+
 
     /**
      * Set RecyclerView's LayoutManager to the one given.
@@ -105,6 +118,36 @@ public class Fragment_recent extends Fragment {
         mRecyclerView.scrollToPosition(scrollPosition);
     }
 
+    private void configureOnLongClickRecyclerView() {
+        ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
+                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener()
+                {
+                    @Override
+                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                        Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+
+                        return true;
+                    }
+                });
+    }
+
+    private void configureOnClickRecyclerView()
+    {
+        ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener()
+                {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v)
+                    {
+                        Log.e("TAG", "Position : "+position);
+                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
+
+
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save currently selected layout manager.
@@ -113,16 +156,17 @@ public class Fragment_recent extends Fragment {
     }
 
     /**
-     * Generates Strings for RecyclerView's adapter. This data would usually come
+     * Generates RecyclerView's adapter. This data would usually come
      * from a local content provider or remote server.
      */
     private void initDataset() {
         mData = new ArrayList<>();
 
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
     }
 
 

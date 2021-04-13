@@ -27,9 +27,11 @@
             android:id="@+id/second_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
+            android:background="#FFEB3B"
             android:minHeight="?attr/actionBarSize"
-            app:titleTextColor="@android:color/holo_red_light"
+            app:titleTextColor="@android:color/black"
+            android:outlineAmbientShadowColor="@color/blue"
+            app:itemRippleColor="@color/blue"
             app:menu="@menu/second_toolbar"/>
 
         <FrameLayout
