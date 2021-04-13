@@ -8,6 +8,11 @@ public class MangaDetail {
     String genre;
     String description;
 
+    public MangaDetail(String title, int thumbnail) {
+        this.title = title;
+        this.thumbnail = thumbnail;
+    }
+
     public String getDescription() {
         return description;
     }

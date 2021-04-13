@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardview_id"
-    android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:layout_width="120dp"
-    android:layout_height="190dp"
-    xmlns:cardview="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="5dp"
-    cardview:cardCornerRadius="4dp">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
 
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="180dp"
+        android:layout_height="250dp"
+        android:gravity="center_vertical">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/manga_image_view_cardview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <TextView
+        android:id="@+id/manga_text_view_cardview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:srcCompat="@tools:sample/avatars" />
-</LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_gravity="top"
+        android:text="title"
+        android:textSize="50dp" />
+
+</FrameLayout>

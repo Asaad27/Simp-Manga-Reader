@@ -9,7 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".activities.MangaDetailsActivity"></activity>
         <!-- removes default toolbar -->
         <activity android:name=".activities.MainActivity">
             <intent-filter>
