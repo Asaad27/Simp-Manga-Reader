@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
 import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -28,13 +29,14 @@ public class Fragment_recent extends Fragment {
     protected RecyclerViewAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager; private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
-    private static final int SPAN_COUNT = 2;
+    private static final int SPAN_COUNT = 4;
+    private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
 
 
 
 
-    private enum LayoutManagerType {
+    public enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
     }
@@ -57,6 +59,7 @@ public class Fragment_recent extends Fragment {
         //initDataset();
 
         View rootView = inflater.inflate(R.layout.fragment_recent, container, false);
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_recent_recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
@@ -90,18 +93,12 @@ public class Fragment_recent extends Fragment {
                     .findFirstCompletelyVisibleItemPosition();
         }
 
-        switch (layoutManagerType) {
-            case GRID_LAYOUT_MANAGER:
-                mLayoutManager = new GridLayoutManager(getActivity(), SPAN_COUNT);
-                mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
-                break;
-            case LINEAR_LAYOUT_MANAGER:
-                mLayoutManager = new LinearLayoutManager(getActivity());
-                mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
-                break;
-            default:
-                mLayoutManager = new LinearLayoutManager(getActivity());
-                mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
+        if (layoutManagerType == LayoutManagerType.GRID_LAYOUT_MANAGER) {
+            mLayoutManager = new GridAutoFitLayoutManager(getActivity(), COLUMN_WIDTH);
+            mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
+        } else {
+            mLayoutManager = new LinearLayoutManager(getActivity());
+            mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
         }
 
         mRecyclerView.setLayoutManager(mLayoutManager);
