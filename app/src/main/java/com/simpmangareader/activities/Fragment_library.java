@@ -1,23 +1,29 @@
 package com.simpmangareader.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
 import com.simpmangareader.provider.data.MangaDetail;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
+import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 public class Fragment_library extends Fragment {
 
@@ -100,7 +106,41 @@ public class Fragment_library extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
+
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), VERTICAL);
+        mRecyclerView.addItemDecoration(itemDecor);
+
+        this.configureOnClickRecyclerView();
+        this.configureOnLongClickRecyclerView();
+
     }
+
+    private void configureOnLongClickRecyclerView() {
+        ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
+                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener()
+                {
+                    @Override
+                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
+                        Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+
+                        return true;
+                    }
+                });
+    }
+
+    private void configureOnClickRecyclerView()
+    {
+        ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener()
+                {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v)
+                    {
+                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -116,10 +156,11 @@ public class Fragment_library extends Fragment {
     private void initDataset() {
         mData = new ArrayList<>();
 
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
-        mData.add(new MangaDetail("test", R.drawable.ic_launcher_background));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mData.add(new MangaDetail("test", R.drawable.covertest));
     }
 
 }
