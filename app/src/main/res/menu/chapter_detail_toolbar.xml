@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bt_back"
+        android:onClick="bt_back"
+        android:icon="@drawable/outline_arrow_back_white_20"
+        android:title="back"
+        android:visible="true" />
+    <item
+        android:id="@+id/bt_bookmark"
+        android:visible="true"
+        android:icon="@drawable/outline_favorite_white_20"
+        android:title="bookmark" />
+
+
+</menu>
+

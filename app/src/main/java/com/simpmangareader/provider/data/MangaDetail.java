@@ -1,16 +1,43 @@
 package com.simpmangareader.provider.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MangaDetail {
     String title;
     String url;
+    String thumbnailUrl;
     String author;
     String artist;
-    String genre;
+    String category;
     String description;
+    ArrayList<ChapterDetail> chapters = new ArrayList<>();
+    MangaState state;
+    int thumbnail;
 
     public MangaDetail(String title, int thumbnail) {
         this.title = title;
         this.thumbnail = thumbnail;
+    }
+
+    public MangaDetail(String title, String thumbnailUrl, ArrayList<ChapterDetail> chapters) {
+        this.title = title;
+        this.thumbnailUrl = thumbnailUrl;
+        this.chapters = chapters;
+    }
+
+    public MangaDetail(String title, int thumbnail, ArrayList<ChapterDetail> chapters) {
+        this.title = title;
+        this.chapters = chapters;
+        this.thumbnail = thumbnail;
+    }
+
+    public ArrayList<ChapterDetail> getChapters() {
+        return chapters;
+    }
+
+    public void setChapters(ArrayList<ChapterDetail> chapters) {
+        this.chapters = chapters;
     }
 
     public String getDescription() {
@@ -29,8 +56,13 @@ public class MangaDetail {
         this.thumbnail = thumbnail;
     }
 
-    MangaState state;
-    int thumbnail;
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
 
     public String getTitle() {
         return title;
@@ -64,12 +96,12 @@ public class MangaDetail {
         this.artist = artist;
     }
 
-    public String getGenre() {
-        return genre;
+    public String getCategory() {
+        return category;
     }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public MangaState getState() {
