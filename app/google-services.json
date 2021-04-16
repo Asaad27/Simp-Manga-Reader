@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "271124348134",
+    "firebase_url": "https://mangareader-9fb89-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "mangareader-9fb89",
+    "storage_bucket": "mangareader-9fb89.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:271124348134:android:7e916f9be583400b52cf27",
+        "android_client_info": {
+          "package_name": "com.simpmangareader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "271124348134-rb7b0bbbr4ha9bpeom73j1hesfhahitf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPlZhz5LXrC1Bupjhm8B9tmBAMZJBF7MU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "271124348134-rb7b0bbbr4ha9bpeom73j1hesfhahitf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -34,6 +35,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.firebase:firebase-database:19.2.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -42,6 +44,12 @@ dependencies {
     implementation 'com.android.support:cardview-v7:21.+'
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:21.+'
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+
+    implementation 'com.ss.bannerslider:bannerslider:2.0.0'
+
 
 
 }

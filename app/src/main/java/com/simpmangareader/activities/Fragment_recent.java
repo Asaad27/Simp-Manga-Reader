@@ -1,6 +1,8 @@
 package com.simpmangareader.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +19,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
+import com.simpmangareader.provider.data.ChapterDetail;
 import com.simpmangareader.provider.data.MangaDetail;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +36,8 @@ public class Fragment_recent extends Fragment {
     protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
     protected RecyclerViewAdapter mAdapter;
-    protected RecyclerView.LayoutManager mLayoutManager; private static final String TAG = "RecyclerViewFragment";
+    protected RecyclerView.LayoutManager mLayoutManager;
+    private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private static final int SPAN_COUNT = 4;
     private static final int COLUMN_WIDTH = 130;
@@ -141,6 +146,14 @@ public class Fragment_recent extends Fragment {
                     {
                         Log.e("TAG", "Position : "+position);
                         Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+
+                        //passing args and starting chapter detail activity
+                        Intent intent = new Intent(getContext(), MangaDetailActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelableArrayList("mangaChapters",  mData.get(position).getChapters());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+
                     }
                 });
     }
@@ -161,9 +174,18 @@ public class Fragment_recent extends Fragment {
      */
     private void initDataset() {
         mData = new ArrayList<>();
+        ArrayList<ChapterDetail> mDatas = new ArrayList<>();
 
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
+        mDatas.add(new ChapterDetail("test the chapter",3    ));
+        mDatas.add(new ChapterDetail("test the chapter",3    ));
+        mDatas.add(new ChapterDetail("test the chapter",3    ));
+        mDatas.add(new ChapterDetail("test the chapter",3    ));
+        mDatas.add(new ChapterDetail("test the chapter",3    ));
+        mDatas.add(new ChapterDetail("test the chapter",3    ));
+        mDatas.add(new ChapterDetail("test the chapter",3    ));
+
+        mData.add(new MangaDetail("test", R.drawable.covertest, mDatas));
+
         mData.add(new MangaDetail("test", R.drawable.covertest));
         mData.add(new MangaDetail("test", R.drawable.covertest));
         mData.add(new MangaDetail("test", R.drawable.covertest));

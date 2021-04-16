@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/manga_detail_chapters_fl"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    >
+
+
+    <TextView
+        android:id="@+id/chapter_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="20sp"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:text="@string/chapter_details">
+
+    </TextView>
+
+
+</FrameLayout>
