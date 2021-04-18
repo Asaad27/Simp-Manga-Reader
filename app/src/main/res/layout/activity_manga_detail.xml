@@ -20,8 +20,10 @@
         app:menu="@menu/chapter_detail_toolbar"/>
 
     <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="25px"
         android:orientation="horizontal">
 
         <ImageView
@@ -39,41 +41,49 @@
                 android:id="@+id/manga_detail_title_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="@string/title" />
+                android:text="@string/title"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/manga_detail_author_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="@string/author"  />
+                android:text="@string/author"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/manga_category_title_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="@string/category" />
+                android:text="@string/category"
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/manga_detail_artist_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:text="@string/artist"/>
+                android:text="@string/artist"
+                android:textSize="20sp" />
 
 
         </LinearLayout>
 
 
-
     </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:layout_width="match_parent"
+
+        android:layout_height="30dp"
+        android:layout_marginTop="20px">
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/manga_detail_rv_chapters"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="20px" />
 
 
 </LinearLayout>

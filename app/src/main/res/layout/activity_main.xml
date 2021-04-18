@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/white"
     tools:context=".activities.MainActivity">
 
 
@@ -20,17 +20,17 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blue"
+            android:background="@android:color/holo_red_light"
             android:minHeight="?attr/actionBarSize"
-            app:titleTextColor="@android:color/holo_red_light" />
+            app:titleTextColor="@color/black" />
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/second_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFEB3B"
+            android:background="@color/black"
             android:minHeight="?attr/actionBarSize"
-            app:titleTextColor="@android:color/black"
-            android:outlineAmbientShadowColor="@color/blue"
+            app:titleTextColor="@android:color/white"
+
             app:itemRippleColor="@color/blue"
             app:menu="@menu/second_toolbar"/>
 
