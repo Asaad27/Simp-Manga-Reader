@@ -28,7 +28,7 @@ import java.util.concurrent.*;
 public class MainActivity extends AppCompatActivity {
     //create a thread pool
     public static ExecutorService executorService = Executors.newFixedThreadPool(4);
-    public Handler myHandler = HandlerCompat.createAsync(Looper.myLooper());
+    private Handler myHandler = HandlerCompat.createAsync(Looper.myLooper());
 
     private BottomNavigationView bottomNavigationView;
 
@@ -58,11 +58,6 @@ public class MainActivity extends AppCompatActivity {
             Log.i("TAG", "HTTP response cache installation failed:" + e);
         }
         Mangadex.init(this.getApplicationContext(), executorService);
-        Mangadex.FetchManga(0, 11, result -> {
-            Log.e("Success", String.valueOf(result.length));
-        }, e -> {
-            Log.e("failed", e.getMessage());
-        }, myHandler);
 
         //start fragment
         Fragment fragment = new Fragment_recent();
