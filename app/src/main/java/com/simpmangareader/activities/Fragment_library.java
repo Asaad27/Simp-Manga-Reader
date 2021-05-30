@@ -58,9 +58,6 @@ public class Fragment_library extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-
-        //initDataset();
-
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_library_recycler_view);
