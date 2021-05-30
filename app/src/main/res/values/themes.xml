@@ -20,5 +20,9 @@
         <item name="android:textColor">#aacbb4</item>
     </style>
 
+    <style name="SplashTheme" parent="Theme.SimpMangaReader">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+
 </resources>
 
