@@ -52,27 +52,50 @@ public class Mangadex
 		int finalLimit = limit;
 		executor.execute(() -> {
 			String reqURL = baseURL + "/manga?offset="+ finalOffset +"&limit="+ finalLimit;
-			Log.e("TAG","reqURL : " + reqURL);
-			try {
-				URL url = new URL(reqURL);
-				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-				BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
-				String data = "";
-				//read data from the stream
-				byte[] contents = new byte[1024];
-				int bytesRead = 0;
-				while((bytesRead = in.read(contents)) != -1) {
-					data += new String(contents, 0, bytesRead);
-				}
-				Manga[] mangas = ParseJsonToManga(data);
-
-				handler.post(() -> successCallback.onComplete(mangas));
-			} catch (JSONException | IOException e) {
-				e.printStackTrace();
-				handler.post(() -> failedCallback.onError(e));
-			}
+			GetMangaByURL(successCallback, failedCallback, handler, reqURL);
 		});
 	}
+
+	static public void SearchMangaByName(int offset, int limit, String name,
+										 final NetworkAllMangaFetchSucceed successCallback,
+										 final NetworkAllMangaFetchFailed failedCallback,
+										 final Handler handler)
+	{
+		if (limit <= 0) limit = 1;
+		else if (limit > 100) limit = 100;
+		if (offset < 0) offset = 0;
+
+		int finalOffset = offset;
+		int finalLimit = limit;
+		executor.execute(() -> {
+			String reqURL = baseURL + "/manga?offset="+ finalOffset +"&limit="+ finalLimit+"&title="+name;
+			GetMangaByURL(successCallback, failedCallback, handler, reqURL);
+		});
+	}
+
+	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkAllMangaFetchFailed failedCallback, Handler handler, String reqURL) {
+		Log.e("TAG", "reqURL : " + reqURL);
+		try {
+			URL url = new URL(reqURL);
+			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+			BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
+			String data = "";
+			//read data from the stream
+			byte[] contents = new byte[1024];
+			int bytesRead = 0;
+			while ((bytesRead = in.read(contents)) != -1) {
+				data += new String(contents, 0, bytesRead);
+			}
+			Manga[] mangas = ParseJsonToManga(data);
+
+			handler.post(() -> successCallback.onComplete(mangas));
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+			handler.post(() -> failedCallback.onError(e));
+		}
+	}
+
+
 	private static Manga[] ParseJsonToManga(String data) throws JSONException {
 		JSONObject json = new JSONObject(data);
 		//start parsing
