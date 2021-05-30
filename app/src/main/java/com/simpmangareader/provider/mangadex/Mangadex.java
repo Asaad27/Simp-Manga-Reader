@@ -1,14 +1,25 @@
 package com.simpmangareader.provider.mangadex;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.Volley;
+import com.simpmangareader.callbacks.NetworkAllMangaFetchFailed;
+import com.simpmangareader.callbacks.NetworkAllMangaFetchSucceed;
 import com.simpmangareader.provider.data.Manga;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.*;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 /**
@@ -17,37 +28,76 @@ import com.simpmangareader.provider.data.Manga;
 public class Mangadex
 {
 	public static final String baseURL = "https://api.mangadex.org";
-	private static View currentView;
-	private static RequestQueue queue;
+	private static Executor executor;
 
-	public static void init(Context ctx)
+	public static void init(Context ctx, Executor executor)
 	{
-		queue = Volley.newRequestQueue(ctx);
+		Mangadex.executor = executor;
 	}
 
 	/**
 	*  Fetch limit manga from MangaDex API starting at offset, and display the result into the view
 	 *  return true if the request is made, else it returns false
 	**/
-	static public boolean FetchMangaToView(View view, int offset, int limit)
+	static public void FetchManga(int offset, int limit,
+								  final NetworkAllMangaFetchSucceed successCallback,
+								  final NetworkAllMangaFetchFailed failedCallback,
+								  final Handler handler)
 	{
-		if (limit <= 0 || limit > 100 || offset < 0) return false;
-		currentView = view;
-		String reqURL = baseURL + "/manga?offset="+offset+"&limit="+limit;
-		Log.e("TAG","reqURL : " + reqURL);
-		MangadexMangaArrayRequest mangaArrayRequest = new MangadexMangaArrayRequest(Request.Method.GET,
-				reqURL,
-				(Response.Listener<Manga[]>) response -> {
-					//TODO : feed the manga data to the view
-					//NOTE(Mouad): Log for debug only
-					Log.e("Success", new Integer(response.length).toString());
-				},
-				error -> {
-					//TODO: report failure
-					Log.e("Error", error.getMessage());
-				});
-		queue.add(mangaArrayRequest);
-		return true;
+		if (limit <= 0) limit = 1;
+		else if (limit > 100) limit = 100;
+		if (offset < 0) offset = 0;
+
+		int finalOffset = offset;
+		int finalLimit = limit;
+		executor.execute(() -> {
+			String reqURL = baseURL + "/manga?offset="+ finalOffset +"&limit="+ finalLimit;
+			Log.e("TAG","reqURL : " + reqURL);
+			try {
+				URL url = new URL(reqURL);
+				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+				BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
+				String data = "";
+				//read data from the stream
+				byte[] contents = new byte[1024];
+				int bytesRead = 0;
+				while((bytesRead = in.read(contents)) != -1) {
+					data += new String(contents, 0, bytesRead);
+				}
+				Manga[] mangas = ParseJsonToManga(data);
+
+				handler.post(() -> successCallback.onComplete(mangas));
+			} catch (JSONException | IOException e) {
+				e.printStackTrace();
+				handler.post(() -> failedCallback.onError(e));
+			}
+		});
+	}
+	private static Manga[] ParseJsonToManga(String data) throws JSONException {
+		JSONObject json = new JSONObject(data);
+		//start parsing
+		int count = json.getInt("limit");
+		JSONArray array = json.getJSONArray("results");
+		Manga[] mangas = new Manga[count];
+		for (int i = 0; i < count; ++i)
+		{
+			JSONObject result = array.getJSONObject(i);
+			if (!result.getString("result").equals("ok")) continue;
+			JSONObject mangaJson = result.getJSONObject("data");
+			mangas[i] = new Manga();
+			//fill in the fields
+			mangas[i].id = mangaJson.getString("id");
+			JSONObject mangaAttributeJson = mangaJson.getJSONObject("attributes");
+			mangas[i].title = mangaAttributeJson.getJSONObject("title").getString("en");
+			mangas[i].description = mangaAttributeJson.getJSONObject("description").getString("en");
+			mangas[i].link_ap = mangaAttributeJson.getJSONObject("links").getString("ap");
+			//TODO : get cover
+			//mangas[i].ChapterCount = mangaAttributeJson.getInt("lastVolume");
+			mangas[i].status = mangaAttributeJson.getString("status");
+			mangas[i].publicationDemographic = mangaAttributeJson.getString("publicationDemographic");
+
+		}
+		return mangas;
 	}
 
 }

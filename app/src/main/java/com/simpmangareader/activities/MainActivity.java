@@ -1,30 +1,37 @@
 package com.simpmangareader.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.Fragment;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.net.http.HttpResponseCache;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
 import com.simpmangareader.R;
 import com.simpmangareader.provider.mangadex.Mangadex;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.*;
 
 public class MainActivity extends AppCompatActivity {
+    //create a thread pool
+    public static ExecutorService executorService = Executors.newFixedThreadPool(4);
+    public Handler myHandler = HandlerCompat.createAsync(Looper.myLooper());
 
     private BottomNavigationView bottomNavigationView;
-    private NavigationView navigationView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,12 +49,33 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
+        //Allocate cache for Network
+        try {
+            File httpCacheDir = new File(this.getApplicationContext().getCacheDir(), "http");
+            long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+            HttpResponseCache.install(httpCacheDir, httpCacheSize);
+        } catch (IOException e) {
+            Log.i("TAG", "HTTP response cache installation failed:" + e);
+        }
+        Mangadex.init(this.getApplicationContext(), executorService);
+        Mangadex.FetchManga(0, 11, result -> {
+            Log.e("Success", String.valueOf(result.length));
+        }, e -> {
+            Log.e("failed", e.getMessage());
+        }, myHandler);
 
-        Mangadex.init(this.getApplicationContext());
-        Mangadex.FetchMangaToView(null,0,10);
         //start fragment
         Fragment fragment = new Fragment_recent();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        HttpResponseCache cache = HttpResponseCache.getInstalled();
+        if (cache != null) {
+            cache.flush();
+        }
     }
 
     @Override
@@ -58,34 +86,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //make navigationbar clickable, navigation between fragments
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener(){
+    private final BottomNavigationView.OnNavigationItemSelectedListener navListener =
+        item -> {
+            Fragment selectedFragment = null;
 
-                @SuppressLint("NonConstantResourceId")
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selectedFragment = null;
+            switch (item.getItemId()){
+                case R.id.bt_recent:
+                    selectedFragment = new Fragment_recent();
+                    break;
+                case R.id.bt_browse:
+                    selectedFragment = new Fragment_browse();
+                    break;
+                case R.id.bt_library:
+                    selectedFragment = new Fragment_library();
+                    break;
+            }
 
-                    switch (item.getItemId()){
-                        case R.id.bt_recent:
-                            selectedFragment = new Fragment_recent();
-                            break;
-                        case R.id.bt_browse:
-                            selectedFragment = new Fragment_browse();
-                            break;
-                        case R.id.bt_library:
-                            selectedFragment = new Fragment_library();
-                            break;
-                    }
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
 
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-
-                    return true;
-                }
-            };
+            return true;
+        };
 
 
-    //ask user for read and write permissions
+    //ask user for read and write and internet permissions
     private void SetPermissions(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
@@ -93,6 +116,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+        }
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 1);
         }
     }
 }

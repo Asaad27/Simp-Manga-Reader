@@ -16,6 +16,8 @@ public class Fragment_browse extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //TODO: get the data from the web
+        //TODO: the data will not be immediately available, we need to display something until the data is ready...
         return inflater.inflate(R.layout.fragment_browse, container, false);
     }
 }
