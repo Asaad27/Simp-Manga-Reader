@@ -44,12 +44,6 @@ dependencies {
     implementation 'com.android.support:cardview-v7:21.+'
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:21.+'
-
     implementation 'com.squareup.picasso:picasso:2.71828'
-
-
     implementation 'com.ss.bannerslider:bannerslider:2.0.0'
-
-
-
 }
