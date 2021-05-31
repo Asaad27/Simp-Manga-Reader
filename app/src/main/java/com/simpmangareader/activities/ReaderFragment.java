@@ -2,7 +2,6 @@ package com.simpmangareader.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.viewpager.widget.PagerAdapter;
@@ -21,27 +20,17 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.simpmangareader.R;
-import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
-import com.simpmangareader.callbacks.NetworkFailed;
 import com.simpmangareader.provider.data.Chapter;
-import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-
-import static android.content.ContentValues.TAG;
 
 public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBarChangeListener{
 
     private Chapter chapter;
+    private Bitmap[] pagesBitmap;
+    private boolean[] isPageLoading;
     private ViewPager viewPager;
     private MyViewPagerAdapter myViewPagerAdapter;
     private TextView lblCount, lblTitle, lblDate;
@@ -74,37 +63,30 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
         selectedPosition = getArguments().getInt("position");
 
 
-        chapter.bitmaps = new Bitmap[chapter.getSize() + 10];
-        Log.d(TAG, "onCreateView: chapterbitmapssize " + chapter.data.length+10);
+        pagesBitmap = new Bitmap[chapter.getPageCount()];
+        isPageLoading = new boolean[chapter.getPageCount()];
 
-        seekBar.setMax(chapter.getSize() - 1);
+        seekBar.setMax(pagesBitmap.length - 1);
         seekBar.setOnSeekBarChangeListener(this);
         myViewPagerAdapter = new MyViewPagerAdapter();
         viewPager.setAdapter(myViewPagerAdapter);
         viewPager.addOnPageChangeListener(viewPagerPageChangeListener);
 
         setCurrentItem(selectedPosition);
-
-
-        Mangadex.FetchChapterPictures(chapter, (finalI,image) -> {
-
-            chapter.bitmaps[finalI] =  image;
-            // TODO DON'T TOUCH !!!! THE ORIGINAL THREAD DON T WANT YOU TO TOUCH HIS CHILDREN
-           // Looper.prepare();
-           /* synchronized (myViewPagerAdapter) {
-                myViewPagerAdapter.notifyDataSetChanged();
+        for (int i =0; i < isPageLoading.length; ++i) isPageLoading[i] = true;
+        Mangadex.FetchAllChapterPictures(chapter, (pageNumber, pageImage) -> {
+            synchronized (pagesBitmap) {
+                pagesBitmap[pageNumber] = pageImage;
             }
-            */
-           /* synchronized (viewPager) {
-                System.out.println(image.toString());
-                viewPager.notifyAll();
-
-                System.out.println(chapter.bitmaps.length);
-                Looper.loop();
+            synchronized (isPageLoading)
+            {
+                isPageLoading[pageNumber] = false;
             }
-            */
-        }, (finalI, e) -> {
-            //TODO: report failure
+        }, (e, pageNumber) -> {
+            synchronized (isPageLoading)
+            {
+                isPageLoading[pageNumber] = false;
+            }
         }, myHandler);
 
 
@@ -142,7 +124,7 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
     };
 
     private void displayMetaInfo(int position) {
-        lblCount.setText((position + 1) + " of " + chapter.getSize());
+        lblCount.setText((position + 1) + " of " + chapter.getPageCount());
         lblTitle.setText(chapter.title);
     }
 
@@ -183,27 +165,50 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
 
             final SubsamplingScaleImageView imageViewPreview = view.findViewById(R.id.image_preview);
 
-            //TODO : replace this with a loading screen, here we wait untill the page bitmap is loaded, this infinite loop causes the application to crash
-            while(chapter.bitmaps[position] == null)
-                System.out.println("waiting lol");
-
-            imageViewPreview.setImage(ImageSource.bitmap(chapter.bitmaps[position]));
+            if (pagesBitmap[position] == null) {
+                if (!isPageLoading[position])
+                {
+                    isPageLoading[position] = true;
+                    // page didn't load wit hall the pages, so try reloading it individually
+                    Mangadex.FetchChapterPicture(chapter, position, pageImage -> {
+                        synchronized (imageViewPreview) {
+                            imageViewPreview.post(() -> {
+                                imageViewPreview.setImage(ImageSource.bitmap(pageImage));
+                            });
+                        }
+                        synchronized (pagesBitmap) {
+                            pagesBitmap[position] = pageImage;
+                        }
+                        synchronized (isPageLoading)
+                        {
+                            isPageLoading[position] = false;
+                        }
+                    }, e -> {
+                        //TODO: report failure
+                        synchronized (isPageLoading)
+                        {
+                            isPageLoading[position] = false;
+                        }
+                    }, myHandler);
+                }
+            }
+            else
+            {
+                imageViewPreview.setImage(ImageSource.bitmap(pagesBitmap[position]));
+            }
 
             container.addView(view);
-            imageViewPreview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(lnBottom.getVisibility() == View.INVISIBLE){
-                        lnBottom.setVisibility(View.VISIBLE);
-                        lnTop.setVisibility(View.VISIBLE);
-                    }
-
-                    else{
-                        lnBottom.setVisibility(View.INVISIBLE);
-                        lnTop.setVisibility(View.INVISIBLE);
-                    }
-
+            imageViewPreview.setOnClickListener(v -> {
+                if(lnBottom.getVisibility() == View.INVISIBLE){
+                    lnBottom.setVisibility(View.VISIBLE);
+                    lnTop.setVisibility(View.VISIBLE);
                 }
+
+                else{
+                    lnBottom.setVisibility(View.INVISIBLE);
+                    lnTop.setVisibility(View.INVISIBLE);
+                }
+
             });
 
             return view;
@@ -211,7 +216,7 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
 
         @Override
         public int getCount() {
-            return chapter.getSize();
+            return pagesBitmap.length;
         }
 
         @Override
