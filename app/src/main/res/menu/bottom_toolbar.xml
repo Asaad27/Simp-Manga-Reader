@@ -3,6 +3,7 @@
 
     <item
         android:id="@+id/bt_recent"
+        android:icon="@drawable/iconetimemachine"
         android:title="@string/recent" />
     <item
         android:id="@+id/bt_library"

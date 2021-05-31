@@ -9,6 +9,7 @@ import android.util.Log;
 import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
 import com.simpmangareader.callbacks.NetworkFailed;
 import com.simpmangareader.callbacks.NetworkAllMangaFetchSucceed;
+
 import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
 import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
@@ -76,8 +77,9 @@ public class Mangadex
 		});
 	}
 
-	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkFailed failedCallback, Handler handler, String reqURL) {
-		Log.e("TAG", "reqURL : " + reqURL);
+	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkAllMangaFetchFailed failedCallback, Handler handler, String reqURL) {
+		Log.e("getMangaByURL", "reqURL : " + reqURL);
+
 		try {
 			URL url = new URL(reqURL);
 			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
@@ -89,7 +91,7 @@ public class Mangadex
 			while ((bytesRead = in.read(contents)) != -1) {
 				data += new String(contents, 0, bytesRead);
 			}
-			Manga[] mangas = ParseJsonToManga(data);
+			MangaDetail[] mangas = ParseJsonToManga(data);
 
 			handler.post(() -> successCallback.onComplete(mangas));
 		} catch (JSONException | IOException e) {
@@ -99,28 +101,32 @@ public class Mangadex
 	}
 
 
-	private static Manga[] ParseJsonToManga(String data) throws JSONException {
+	private static MangaDetail[] ParseJsonToManga(String data) throws JSONException {
 		JSONObject json = new JSONObject(data);
 		//start parsing
 		JSONArray array = json.getJSONArray("results");
+
 		int count = array.length();
-		Manga[] mangas = new Manga[count];
+
+		MangaDetail[] mangas = new MangaDetail[count];
+
 		for (int i = 0; i < count; ++i)
 		{
 			JSONObject result = array.getJSONObject(i);
 			if (!result.getString("result").equals("ok")) continue;
 			JSONObject mangaJson = result.getJSONObject("data");
-			mangas[i] = new Manga();
-			//fill in the fields
-			mangas[i].id = mangaJson.getString("id");
+			mangas[i] = new MangaDetail();
+			//fill in the fields*
+			mangas[i].setId(mangaJson.getString("id"));
 			JSONObject mangaAttributeJson = mangaJson.getJSONObject("attributes");
-			mangas[i].title = mangaAttributeJson.getJSONObject("title").getString("en");
-			mangas[i].description = mangaAttributeJson.getJSONObject("description").getString("en");
-			mangas[i].link_ap = mangaAttributeJson.getJSONObject("links").getString("ap");
+			mangas[i].setTitle(mangaAttributeJson.getJSONObject("title").getString("en"));
+			mangas[i].setDescription(mangaAttributeJson.getJSONObject("description").getString("en"));
+			mangas[i].setThumbnailUrl(mangaAttributeJson.getJSONObject("links").getString("ap"));
+
 			//TODO : get cover
 			//mangas[i].ChapterCount = mangaAttributeJson.getInt("lastVolume");
-			mangas[i].status = mangaAttributeJson.getString("status");
-			mangas[i].publicationDemographic = mangaAttributeJson.getString("publicationDemographic");
+			mangas[i].setStatus(mangaAttributeJson.getString("status"));
+			mangas[i].setPublicationDemographic(mangaAttributeJson.getString("publicationDemographic"));
 
 		}
 		return mangas;
