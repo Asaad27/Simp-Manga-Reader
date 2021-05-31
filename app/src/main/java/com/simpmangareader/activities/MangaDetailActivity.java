@@ -67,7 +67,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         descriptionText = findViewById(R.id.manga_detail_description_tv);
 
         //get data from previous activity
-        chapters = new Chapter[0];
+        //chapters = new Chapter[0];
         manga =  this.getIntent().getExtras().getParcelable("mangas");
 
         coverImage.setImageBitmap(manga.cover);
