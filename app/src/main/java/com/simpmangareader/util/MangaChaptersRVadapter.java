@@ -32,12 +32,14 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
 
     @Override
     public void onBindViewHolder(@NonNull MangaChapterViewHolder holder, int position) {
+        if (chapters == null) return;
         String detail = chapters[position].chapterNumber + " " +  chapters[position].title ;
         holder.getChapter_detail().setText(detail);
     }
 
     @Override
     public int getItemCount() {
+        if (chapters == null) return 0;
         return chapters.length;
     }
 
@@ -59,6 +61,9 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
         public void setChapter_detail(TextView chapter_detail) {
             this.chapter_detail = chapter_detail;
         }
+    }
+    public void setChapters(Chapter[] chapters){
+        this.chapters = chapters;
     }
 }
 
