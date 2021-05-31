@@ -63,8 +63,8 @@ public class MangaDetailActivity extends AppCompatActivity {
         statusText = findViewById(R.id.manga_detail_status_tv);
         descriptionText = findViewById(R.id.manga_detail_description_tv);
 
-        chapters = new Chapter[0];
         //get data from previous activity
+        chapters = new Chapter[0];
         manga =  this.getIntent().getExtras().getParcelable("manga");
 
         coverImage.setImageBitmap(manga.cover);
@@ -73,9 +73,18 @@ public class MangaDetailActivity extends AppCompatActivity {
         statusText.setText(manga.status);
         descriptionText.setText(manga.description);
 
-        //TODO: use manga to set the manga specific data
         Mangadex.FetchAllMangaEnglishChapter(manga.id, result -> {
-            //TODO: display the fetched chapters
+            synchronized (chapters){
+                chapters = result;
+                Log.e("Chapters",""+result.length);
+                mAdapter.setChapters(chapters);
+            }
+            synchronized (mAdapter) {
+                mAdapter.notifyDataSetChanged();
+            }
+            synchronized (mRecyclerView) {
+                mRecyclerView.notifyAll();
+            }
         }, e -> {
             //TODO: report failure
         }, HandlerCompat.createAsync(Looper.myLooper()));

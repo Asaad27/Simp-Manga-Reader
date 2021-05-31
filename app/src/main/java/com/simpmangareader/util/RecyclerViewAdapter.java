@@ -39,8 +39,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-
-        //holder.getImg_book_thumbnail().setImageResource(mData.get(position).getThumbnail());
         Manga manga = mData.get(position);
         ImageView img = holder.getImg_book_thumbnail();
         if (manga.cover != null)
