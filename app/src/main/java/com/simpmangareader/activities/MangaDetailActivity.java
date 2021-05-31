@@ -3,12 +3,14 @@ package com.simpmangareader.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.os.HandlerCompat;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -66,13 +68,13 @@ public class MangaDetailActivity extends AppCompatActivity {
 
         //get data from previous activity
         //chapters = new Chapter[0];
-        manga =  this.getIntent().getExtras().getParcelable("manga");
+        manga =  this.getIntent().getExtras().getParcelable("mangas");
 
         coverImage.setImageBitmap(manga.cover);
-        titleText.setText(manga.title);
-        categoryText.setText(manga.publicationDemographic);
-        statusText.setText(manga.status);
-        descriptionText.setText(manga.description);
+        titleText.setText(Html.fromHtml( "<b>" + manga.title +"</b>"));
+        categoryText.append((Html.fromHtml("<em> " + manga.publicationDemographic + " </em>")));
+        statusText.append((Html.fromHtml("<em> " + (manga.status)+ "</em>")));
+        descriptionText.append((Html.fromHtml("<em> " +manga.description+ "</em>")));
 
         Mangadex.FetchAllMangaEnglishChapter(manga.id,
                 (result, offset, totalSize) -> {
@@ -133,6 +135,7 @@ public class MangaDetailActivity extends AppCompatActivity {
                 .setOnItemClickListener((recyclerView, position, v) -> {
                     Log.e("TAG", "Position : "+position);
                     Toast.makeText(getBaseContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                    startFragment(chapters[position]);
                 });
     }
 
@@ -163,6 +166,17 @@ public class MangaDetailActivity extends AppCompatActivity {
         mRecyclerView.scrollToPosition(scrollPosition);
     }
 
+    public void startFragment(Chapter chapter) {
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("manga", chapter);
+        bundle.putInt("position", 0);
+        assert getFragmentManager() != null;
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ReaderFragment newFragment = ReaderFragment.newInstance();
+        newFragment.setArguments(bundle);
+        newFragment.show(ft, "slideshow");
+    }
 }
 
 
