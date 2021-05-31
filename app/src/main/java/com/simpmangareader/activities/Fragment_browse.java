@@ -46,7 +46,7 @@ public class Fragment_browse extends Fragment {
     private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
 
-    int currentIndex= 0, currentLimit = 100;
+    int currentIndex= 0, currentLimit = 15;
 
 
     public enum LayoutManagerType {
@@ -69,6 +69,7 @@ public class Fragment_browse extends Fragment {
         Mangadex.FetchManga(currentIndex, currentLimit, result -> {
             //NOTE(Mouad): result is an array of Manga
             //UI UPDATED
+            Log.e("Manga","ok");
             synchronized(mData) {
                 mData.addAll(Arrays.asList(result));
             }

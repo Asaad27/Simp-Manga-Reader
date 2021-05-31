@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 public class MainActivity extends AppCompatActivity {
-    static final int THREAD_POOL_NBR = 10;
+    static final int THREAD_POOL_NBR = 16;
     //create a thread pool
     public static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_NBR);
     private Handler myHandler = HandlerCompat.createAsync(Looper.myLooper());
