@@ -2,6 +2,7 @@ package com.simpmangareader.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.simpmangareader.R;
 import com.simpmangareader.activities.Fragment_recent;
 import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.services.PicassoLoadingService;
 
 import java.util.List;
 
@@ -42,6 +44,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(MyViewHolder holder, final int position) {
 
         holder.getImg_book_thumbnail().setImageResource(mData.get(position).getThumbnail());
+        if (mData.get(position).getThumbnailUrl() != null) {
+            PicassoLoadingService picassoLoadingService = new PicassoLoadingService();
+
+            picassoLoadingService.loadImage(mData.get(position).getCoverScrappedUrl(), holder.getImg_book_thumbnail());
+            Log.d("scrappedUrl", "onBindViewHolder: " + mData.get(position).getCoverScrappedUrl());
+        }
         holder.getTv_manga_title().setText(mData.get(position).getTitle());
 
     }

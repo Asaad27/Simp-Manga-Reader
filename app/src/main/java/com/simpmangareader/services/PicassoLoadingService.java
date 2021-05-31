@@ -9,6 +9,7 @@ import ss.com.bannerslider.ImageLoadingService;
 public class PicassoLoadingService implements ImageLoadingService {
     @Override
     public void loadImage(String url, ImageView imageView) {
+
         Picasso.get().load(url).into(imageView);
     }
 

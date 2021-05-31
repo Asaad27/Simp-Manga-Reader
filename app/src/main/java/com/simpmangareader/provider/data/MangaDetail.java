@@ -2,6 +2,7 @@ package com.simpmangareader.provider.data;
 
 import android.graphics.Bitmap;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class MangaDetail {
     private String description;
     private String url;
     private String thumbnailUrl; // we will use this to get a cover picture for now as the API doesn't support covers yet
+    private String coverScrappedUrl; //scrapped url to use directly when no need to download a picture
     private int thumbnail;
     public Bitmap cover;
     private String author;
@@ -155,4 +157,13 @@ public class MangaDetail {
     public void setPublicationDemographic(String publicationDemographic) {
         this.publicationDemographic = publicationDemographic;
     }
+
+    public String getCoverScrappedUrl() {
+        return coverScrappedUrl;
+    }
+
+    public void setCoverScrappedUrl(String coverScrappedUrl) {
+        this.coverScrappedUrl = coverScrappedUrl;
+    }
 }
+
