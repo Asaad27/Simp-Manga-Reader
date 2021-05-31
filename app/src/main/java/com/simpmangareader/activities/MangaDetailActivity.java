@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.os.Looper;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -69,10 +70,10 @@ public class MangaDetailActivity extends AppCompatActivity {
         manga =  this.getIntent().getExtras().getParcelable("manga");
 
         coverImage.setImageBitmap(manga.cover);
-        titleText.setText(manga.title);
-        categoryText.setText(manga.publicationDemographic);
-        statusText.setText(manga.status);
-        descriptionText.setText(manga.description);
+        titleText.setText(Html.fromHtml( "<b>" + manga.title +"</b>"));
+        categoryText.append((Html.fromHtml("<em> " + manga.publicationDemographic + " </em>")));
+        statusText.append((Html.fromHtml("<em> " + (manga.status)+ "</em>")));
+        descriptionText.append((Html.fromHtml("<em> " +manga.description+ "</em>")));
 
         Mangadex.FetchAllMangaEnglishChapter(manga.id,
                 (result, offset, totalSize) -> {
