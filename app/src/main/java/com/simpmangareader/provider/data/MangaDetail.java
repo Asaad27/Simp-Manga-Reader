@@ -1,19 +1,27 @@
 package com.simpmangareader.provider.data;
 
+import android.graphics.Bitmap;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MangaDetail {
-    String title;
-    String url;
-    String thumbnailUrl;
-    String author;
-    String artist;
-    String category;
-    String description;
-    ArrayList<ChapterDetail> chapters = new ArrayList<>();
-    MangaState state;
-    int thumbnail;
+    private String id;
+    private String title;
+    private String description;
+    private String url;
+    private String thumbnailUrl; // we will use this to get a cover picture for now as the API doesn't support covers yet
+    private int thumbnail;
+    public Bitmap cover;
+    private String author;
+    private String artist;
+    private String category;
+    public String status;
+    public String publicationDemographic;
+    private ArrayList<ChapterDetail> chapters = new ArrayList<>();
+    private MangaState state;
+
+
 
     public MangaDetail(String title, int thumbnail) {
         this.title = title;
@@ -30,6 +38,10 @@ public class MangaDetail {
         this.title = title;
         this.chapters = chapters;
         this.thumbnail = thumbnail;
+    }
+
+    public MangaDetail() {
+
     }
 
     public ArrayList<ChapterDetail> getChapters() {
@@ -110,5 +122,37 @@ public class MangaDetail {
 
     public void setState(MangaState state) {
         this.state = state;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Bitmap getCover() {
+        return cover;
+    }
+
+    public void setCover(Bitmap cover) {
+        this.cover = cover;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPublicationDemographic() {
+        return publicationDemographic;
+    }
+
+    public void setPublicationDemographic(String publicationDemographic) {
+        this.publicationDemographic = publicationDemographic;
     }
 }
