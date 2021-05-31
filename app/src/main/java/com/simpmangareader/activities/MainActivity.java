@@ -33,6 +33,10 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
 
+    private final Fragment_browse fragment_browse = new Fragment_browse();
+    private final Fragment_recent fragment_recent = new Fragment_recent();
+    private final Fragment_library fragment_library = new Fragment_library();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,13 +91,13 @@ public class MainActivity extends AppCompatActivity {
 
             switch (item.getItemId()){
                 case R.id.bt_recent:
-                    selectedFragment = new Fragment_recent();
+                    selectedFragment = fragment_recent;
                     break;
                 case R.id.bt_browse:
-                    selectedFragment = new Fragment_browse();
+                    selectedFragment = fragment_browse;
                     break;
                 case R.id.bt_library:
-                    selectedFragment = new Fragment_library();
+                    selectedFragment = fragment_library;
                     break;
             }
 

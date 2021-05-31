@@ -44,7 +44,7 @@ public class Fragment_browse extends Fragment {
     private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
 
-    int currentIndex= 0, currentLimit = 10;
+    int currentIndex= 0, currentLimit = 100;
 
     public enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
