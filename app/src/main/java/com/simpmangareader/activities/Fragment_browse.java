@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,6 +45,8 @@ public class Fragment_browse extends Fragment {
     private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
 
+    int currentIndex= 0, currentLimit = 10;
+
     public enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
@@ -58,13 +61,21 @@ public class Fragment_browse extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_browse, container, false);
         initRecyclerView(rootView, savedInstanceState);
 
+        //still working on this stuff
+        /*mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((GridLayoutManager) mLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                currentLimit += 10;
+                Log.e(TAG, "onLoadMore: " + currentLimit);
+            }
+        });*/
 
         //TODO: the data will not be immediately available, we need to display something until the data is ready...
-        Mangadex.FetchManga(0, 100, result -> {
+        Mangadex.FetchManga(currentIndex, currentLimit, result -> {
             //TODO: update UI
             //NOTE(Mouad): result is an array of Manga
-           // for (int i = 0; i < 100; i++)
-                //Log.e("OncreateView : mangas", result[i].getId() + " " + result[i].getTitle() + " url: " + result[i].getThumbnailUrl());
+           for (int i = 0; i < result.length; i++)
+                Log.e("OncreateView : mangas", result[i].getId() + " " + result[i].getTitle() + " url: " + result[i].getThumbnailUrl());
             Log.e("OncreateView", "Manga size : " + result.length);
             Toast.makeText(getContext(),"Manga size : " + result.length, Toast.LENGTH_LONG).show();
             //UI UPDATED
@@ -77,6 +88,7 @@ public class Fragment_browse extends Fragment {
             synchronized (mRecyclerView) {
                 mRecyclerView.notifyAll();
             }
+            currentIndex = currentLimit;
         }, e -> {
             //TODO: report failure
         }, myHandler);
@@ -179,3 +191,4 @@ public class Fragment_browse extends Fragment {
 
 
 }
+

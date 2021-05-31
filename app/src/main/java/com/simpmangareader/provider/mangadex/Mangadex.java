@@ -12,7 +12,8 @@ import com.simpmangareader.callbacks.NetworkAllMangaFetchSucceed;
 
 import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
 import com.simpmangareader.provider.data.Chapter;
-import com.simpmangareader.provider.data.Manga;
+import com.simpmangareader.provider.data.MangaDetail;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,7 +78,7 @@ public class Mangadex
 		});
 	}
 
-	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkAllMangaFetchFailed failedCallback, Handler handler, String reqURL) {
+	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkFailed failedCallback, Handler handler, String reqURL) {
 		Log.e("getMangaByURL", "reqURL : " + reqURL);
 
 		try {
@@ -109,7 +110,7 @@ public class Mangadex
 		int count = array.length();
 
 		MangaDetail[] mangas = new MangaDetail[count];
-
+		CoverScrapper coverScrapper = new CoverScrapper("https://www.anime-planet.com/manga/");
 		for (int i = 0; i < count; ++i)
 		{
 			JSONObject result = array.getJSONObject(i);
@@ -124,6 +125,9 @@ public class Mangadex
 			mangas[i].setThumbnailUrl(mangaAttributeJson.getJSONObject("links").getString("ap"));
 
 			//TODO : get cover
+			//String scrappedCover = coverScrapper.Scrap(mangas[i].getThumbnailUrl());
+			//mangas[i].setCoverScrappedUrl(scrappedCover);
+
 			//mangas[i].ChapterCount = mangaAttributeJson.getInt("lastVolume");
 			mangas[i].setStatus(mangaAttributeJson.getString("status"));
 			mangas[i].setPublicationDemographic(mangaAttributeJson.getString("publicationDemographic"));
@@ -202,7 +206,7 @@ public class Mangadex
 			}
 		});
 	}
-	
+
 	public static void FetchChapterPictures(Chapter chapter,
 											final NetworkChapterPageSucceed successCallback,
 											final NetworkFailed failedCallback,
@@ -237,4 +241,6 @@ public class Mangadex
 			}
 		});
 	}
+
+
 }
