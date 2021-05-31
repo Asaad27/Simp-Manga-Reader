@@ -7,5 +7,7 @@
     <string name="category">Category :</string>
     <string name="author">Author :</string>
     <string name="title">Title :</string>
+    <string name="description">Description :</string>
+    <string name="status">Status :</string>
     <string name="chapter_details">chapter details</string>
 </resources>
