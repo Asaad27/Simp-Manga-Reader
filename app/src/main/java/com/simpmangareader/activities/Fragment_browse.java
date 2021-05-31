@@ -14,11 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
+import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
@@ -46,6 +48,7 @@ public class Fragment_browse extends Fragment {
 
     int currentIndex= 0, currentLimit = 100;
 
+
     public enum LayoutManagerType {
         GRID_LAYOUT_MANAGER,
         LINEAR_LAYOUT_MANAGER
@@ -60,14 +63,7 @@ public class Fragment_browse extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_browse, container, false);
         initRecyclerView(rootView, savedInstanceState);
 
-        //still working on this stuff
-        /*mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener((GridLayoutManager) mLayoutManager) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                currentLimit += 10;
-                Log.e(TAG, "onLoadMore: " + currentLimit);
-            }
-        });*/
+
 
         //TODO: the data will not be immediately available, we need to display something until the data is ready...
         Mangadex.FetchManga(currentIndex, currentLimit, result -> {
@@ -141,6 +137,7 @@ public class Fragment_browse extends Fragment {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
                 .setOnItemLongClickListener((recyclerView, position, v) -> {
                     Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+
                     return true;
                 });
     }
@@ -155,7 +152,7 @@ public class Fragment_browse extends Fragment {
                     Intent intent = new Intent(getContext(), MangaDetailActivity.class);
                     Bundle bundle = new Bundle();
                     synchronized (mData.get(position)) {
-                        bundle.putParcelable("manga", mData.get(position));
+                        bundle.putParcelable("mangas", mData.get(position));
                     }
                     intent.putExtras(bundle);
                     startActivity(intent);
