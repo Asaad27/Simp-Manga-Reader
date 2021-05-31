@@ -154,7 +154,9 @@ public class Fragment_browse extends Fragment {
                     //passing args and starting chapter detail activity
                     Intent intent = new Intent(getContext(), MangaDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("manga",  mData.get(position));
+                    synchronized (mData.get(position)) {
+                        bundle.putParcelable("manga", mData.get(position));
+                    }
                     intent.putExtras(bundle);
                     startActivity(intent);
                 });

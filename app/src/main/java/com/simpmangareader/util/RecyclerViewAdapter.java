@@ -52,9 +52,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                         img.setImageBitmap(cover);
                     });
                 }
-                synchronized (manga) {
-                    manga.cover = cover;
-                }
+                manga.cover = cover;
             }, e -> {
                 //TODO: report failure
             }, HandlerCompat.createAsync(Looper.getMainLooper()));

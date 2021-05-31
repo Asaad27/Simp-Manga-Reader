@@ -51,7 +51,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_manga_detail);
         chapters = new Chapter[0];
         //get data from previous activity
-        manga =  (Manga)this.getIntent().getExtras().getSerializable("manga");
+        manga =  this.getIntent().getExtras().getParcelable("manga");
         //TODO: use manga to set the manga specific data
         Mangadex.FetchAllMangaEnglishChapter(manga.id, result -> {
             //TODO: display the fetched chapters
