@@ -1,5 +1,5 @@
 package com.simpmangareader.callbacks;
 
-public interface NetworkAllMangaFetchFailed {
+public interface NetworkFailed {
     void onError(Exception e);
 }

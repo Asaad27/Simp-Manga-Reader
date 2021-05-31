@@ -58,7 +58,13 @@ public class MainActivity extends AppCompatActivity {
             Log.i("TAG", "HTTP response cache installation failed:" + e);
         }
         Mangadex.init(this.getApplicationContext(), executorService);
-
+        //test with solo leveling
+        Mangadex.FetchAllMangaEnglishChapter("32d76d19-8a05-4db0-9fc2-e0b0648fe9d0", result -> {
+            Log.e("Success", String.valueOf(result.length));
+        }, e -> {
+            e.printStackTrace();
+            Log.e("Error", e.getMessage());
+        }, myHandler);
         //start fragment
         Fragment fragment = new Fragment_recent();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
