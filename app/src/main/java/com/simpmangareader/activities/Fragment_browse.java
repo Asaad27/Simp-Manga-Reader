@@ -16,6 +16,7 @@ import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,7 +35,7 @@ import java.util.List;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 public class Fragment_browse extends Fragment {
-    //TODO: we need to load more manga when the user reaches the bottom of the page (or near the bottom, for better user experience)
+    //TODO ; fix duplicate issue when loading mangas, when scrolling to the bottom of the screen
     private final ArrayList<Manga> mData = new ArrayList<>();
     protected Fragment_browse.LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
@@ -46,7 +47,9 @@ public class Fragment_browse extends Fragment {
     private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
 
-    int currentIndex= 0, currentLimit = 15;
+    int count = 0;
+    int currentIndex= 0, currentLimit = 1;
+    boolean is_loading = false;
 
 
     public enum LayoutManagerType {
@@ -79,7 +82,10 @@ public class Fragment_browse extends Fragment {
                 synchronized (mRecyclerView) {
                     mRecyclerView.notifyAll();
                 }
-                currentIndex = currentLimit;
+
+                currentIndex = currentLimit + 1;
+                currentLimit = currentIndex + 10;
+
             }, e -> {
                 //TODO: report failure
             }, myHandler);
@@ -106,6 +112,8 @@ public class Fragment_browse extends Fragment {
 
         this.configureOnClickRecyclerView();
         this.configureOnLongClickRecyclerView();
+
+
     }
 
     /**
@@ -132,6 +140,50 @@ public class Fragment_browse extends Fragment {
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                final int visibleThreshold = 2;
+
+                GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+                assert layoutManager != null;
+                int lastItem = layoutManager.findLastCompletelyVisibleItemPosition();
+                int currentTotalCount = layoutManager.getItemCount();
+
+
+                if (currentTotalCount <= lastItem + visibleThreshold && !is_loading) {
+                    is_loading = true;
+
+                    System.out.println("LOADING MORE from " + currentIndex + "to " + currentLimit);
+                    Mangadex.FetchManga(currentIndex, currentLimit, result -> {
+                        //NOTE(Mouad): result is an array of Manga
+                        //UI UPDATED
+                        synchronized (mData) {
+                            mData.addAll(Arrays.asList(result));
+                        }
+                        synchronized (mAdapter) {
+                            mAdapter.notifyDataSetChanged();
+                        }
+                        synchronized (mRecyclerView) {
+                            mRecyclerView.notifyAll();
+                        }
+
+                        is_loading = false;
+                        currentIndex = currentLimit + 1;
+                        currentLimit = currentIndex + 10;
+
+
+                    }, e -> {
+                        //TODO: report failure
+                    }, myHandler);
+
+
+                }
+            }
+        });
     }
 
     private void configureOnLongClickRecyclerView() {
