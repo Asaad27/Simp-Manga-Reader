@@ -199,25 +199,41 @@ public class Mangadex
 	 * utility function to parse Chapter from json string.
 	 **/
 	private static Chapter[] ParseChapter(JSONArray array, int fetched) throws JSONException {
-		//TODO: see if it's worth it running this Parsing on parallel too
 		Chapter[] chapters = new Chapter[fetched];
+		List<Callable<Object>> calls = new ArrayList<>();
+
 		for (int i = 0; i < fetched; ++i) {
-			JSONObject result = array.getJSONObject(i);
-			if (!result.getString("result").equals("ok")) continue;
-			JSONObject chapterJson = result.getJSONObject("data");
-			chapters[i] = new Chapter();
-			chapters[i].id = chapterJson.getString("id");
-			JSONObject chapterAttributeJson = chapterJson.getJSONObject("attributes");
-			chapters[i].translatedLanguage = "en";
-			chapters[i].volume = chapterAttributeJson.getString("volume");
-			chapters[i].title = chapterAttributeJson.getString("title");
-			chapters[i].chapterNumber = chapterAttributeJson.getString("chapter");
-			chapters[i].hash = chapterAttributeJson.getString("hash");
-			JSONArray chapterData = chapterAttributeJson.getJSONArray("data");
-			int dataSize = chapterData.length();
-			chapters[i].data = new String[dataSize];
-			for (int j = 0; j < dataSize; ++j) {
-				chapters[i].data[j] = chapterData.getString(j);
+			int finalI = i;
+			calls.add(Executors.callable(()->{
+				try {
+					JSONObject result = array.getJSONObject(finalI);
+					if (!result.getString("result").equals("ok")) return;
+					JSONObject chapterJson = result.getJSONObject("data");
+					chapters[finalI] = new Chapter();
+					chapters[finalI].id = chapterJson.getString("id");
+					JSONObject chapterAttributeJson = chapterJson.getJSONObject("attributes");
+					chapters[finalI].translatedLanguage = "en";
+					chapters[finalI].volume = chapterAttributeJson.getString("volume");
+					chapters[finalI].title = chapterAttributeJson.getString("title");
+					chapters[finalI].chapterNumber = chapterAttributeJson.getString("chapter");
+					chapters[finalI].hash = chapterAttributeJson.getString("hash");
+					JSONArray chapterData = chapterAttributeJson.getJSONArray("data");
+					int dataSize = chapterData.length();
+					chapters[finalI].data = new String[dataSize];
+					for (int j = 0; j < dataSize; ++j) {
+						chapters[finalI].data[j] = chapterData.getString(j);
+					}
+				}
+				catch (JSONException e)
+				{
+					//do nothing
+				}
+			}));
+			//invoke all the workers and wait for them to finish...
+			try {
+				((ExecutorService)executor).invokeAll(calls);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 		return chapters;
