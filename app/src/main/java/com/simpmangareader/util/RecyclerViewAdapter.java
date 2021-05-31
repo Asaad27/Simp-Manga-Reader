@@ -39,6 +39,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
+
+        //holder.getImg_book_thumbnail().setImageResource(mData.get(position).getThumbnail());
         Manga manga = mData.get(position);
         ImageView img = holder.getImg_book_thumbnail();
         if (manga.cover != null)
@@ -46,6 +48,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             img.setImageBitmap(manga.cover);
         }
         else {
+            //clear the image view and wait for the data to arrive from the API
+            img.setImageBitmap(null);
             Mangadex.GetMangaCover(manga.id, cover -> {
                 synchronized (img) {
                     img.post(()->{
