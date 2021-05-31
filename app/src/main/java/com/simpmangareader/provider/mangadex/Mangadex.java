@@ -6,12 +6,13 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 
 import com.simpmangareader.callbacks.NetworkChapterPageFailed;
-import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
+import com.simpmangareader.callbacks.NetworkChapterAllPagesSucceed;
 import com.simpmangareader.callbacks.NetworkCoverFailed;
 import com.simpmangareader.callbacks.NetworkCoverSucceed;
 import com.simpmangareader.callbacks.NetworkFailed;
 import com.simpmangareader.callbacks.NetworkAllMangaFetchSucceed;
 
+import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
 import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
 import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
@@ -28,7 +29,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -69,7 +69,7 @@ public class Mangadex
 	}
 
 	/**
-	 * Fetch limit manga that are their name matches "name" from MangaDex API starting at offset,
+	 * Fetch limit manga that their name matches "name" from MangaDex API starting at offset,
 	 * the fetch is done on a separate worker thread
 	 * if the the call succeed the the successCallback is invoked, else the failedCallback
 	 * is invoked.
@@ -262,8 +262,8 @@ public class Mangadex
 	 * the succeedCallback is invoked with the bitmap of the image and the page index, if it failed
 	 * failedCallback is invoked, if it's a general error the page index is -1.
 	 * **/
-	public static void FetchChapterPictures(Chapter chapter,
-											final NetworkChapterPageSucceed successCallback,
+	public static void FetchAllChapterPictures(Chapter chapter,
+											final NetworkChapterAllPagesSucceed successCallback,
 											final NetworkChapterPageFailed failedCallback,
 											final Handler handler)
 	{
@@ -283,7 +283,7 @@ public class Mangadex
 							InputStream in  = url.openConnection().getInputStream();
 							Bitmap image = BitmapFactory.decodeStream(in);
 							in.close();
-							successCallback.onComplete(finalI,image);
+							handler.post(() ->successCallback.onComplete(finalI,image));
 						} catch (IOException e) {
 							e.printStackTrace();
 							handler.post(() -> failedCallback.onError(e, finalI));
@@ -294,6 +294,36 @@ public class Mangadex
 			catch (JSONException | IOException e)
 			{
 				handler.post(() -> failedCallback.onError(e, -1));
+			}
+		});
+	}
+	public static void FetchChapterPicture(final Chapter chapter, final int pageNumber,
+										   final NetworkChapterPageSucceed successCallback,
+										   final NetworkFailed failedCallback,
+										   final Handler handler)
+	{
+		executor.execute(()->{
+			try {
+				String reqURL = baseURL + "/at-home/server/" + chapter.id;
+				JSONObject json = new JSONObject(getDataFromURL(reqURL));
+				String chapterBaseURL = json.getString("baseUrl");
+				executor.execute(()->{
+					try {
+						String pageURL = chapterBaseURL + "/data/"+chapter.hash+"/"+chapter.data[pageNumber];
+						URL url  = new URL(pageURL);
+						InputStream in  = url.openConnection().getInputStream();
+						Bitmap image = BitmapFactory.decodeStream(in);
+						in.close();
+						handler.post(() -> successCallback.onComplete(image));
+					} catch (IOException e) {
+						e.printStackTrace();
+						handler.post(() -> failedCallback.onError(e));
+					}
+				});
+			}
+			catch (JSONException | IOException e)
+			{
+				handler.post(() -> failedCallback.onError(e));
 			}
 		});
 	}
