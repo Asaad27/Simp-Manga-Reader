@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.http.HttpResponseCache;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,8 @@ import android.view.Menu;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.simpmangareader.R;
+import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
+import com.simpmangareader.callbacks.NetworkFailed;
 import com.simpmangareader.provider.mangadex.Mangadex;
 
 import java.io.File;
@@ -61,6 +64,12 @@ public class MainActivity extends AppCompatActivity {
         //test with solo leveling
         Mangadex.FetchAllMangaEnglishChapter("32d76d19-8a05-4db0-9fc2-e0b0648fe9d0", result -> {
             Log.e("Success", String.valueOf(result.length));
+            Mangadex.FetchChapterPictures(result[0], (pageNumber, pageImage) -> {
+                Log.e("PageImage", pageImage.getHeight() + " x "+ pageImage.getWidth());
+            }, e -> {
+                e.printStackTrace();
+                Log.e("Error", e.getMessage());
+            }, myHandler);
         }, e -> {
             e.printStackTrace();
             Log.e("Error", e.getMessage());

@@ -1,9 +1,12 @@
 package com.simpmangareader.provider.mangadex;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.util.Log;
 
+import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
 import com.simpmangareader.callbacks.NetworkFailed;
 import com.simpmangareader.callbacks.NetworkAllMangaFetchSucceed;
 import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
@@ -169,7 +172,7 @@ public class Mangadex
 						chapters[offset + i].data = new String[dataSize];
 						for (int j = 0; j < dataSize; ++j)
 						{
-							chapters[offset + i].data[j] = chapterData.toString(j);
+							chapters[offset + i].data[j] = chapterData.getString(j);
 						}
 					}
 					offset += fetched;
@@ -193,5 +196,39 @@ public class Mangadex
 			}
 		});
 	}
-
+	
+	public static void FetchChapterPictures(Chapter chapter,
+											final NetworkChapterPageSucceed successCallback,
+											final NetworkFailed failedCallback,
+											final Handler handler)
+	{
+		executor.execute(()->{
+			try {
+				String reqURL = baseURL + "/at-home/server/" + chapter.id;
+				URL url = new URL(reqURL);
+				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+				BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
+				String data = "";
+				//read data from the stream
+				byte[] contents = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = in.read(contents)) != -1) {
+					data += new String(contents, 0, bytesRead);
+				}
+				JSONObject json = new JSONObject(data);
+				String chapterBaseURL = json.getString("baseUrl");
+				for (int i = 0; i < chapter.data.length; ++i)
+				{
+					String pageURL = chapterBaseURL + "/data/"+chapter.hash+"/"+chapter.data[i];
+					url = new URL(pageURL);
+					Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+					successCallback.onComplete(i,image);
+				}
+			}
+			catch (JSONException | IOException e)
+			{
+				handler.post(() -> failedCallback.onError(e));
+			}
+		});
+	}
 }
