@@ -32,7 +32,10 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
 
     @Override
     public void onBindViewHolder(@NonNull MangaChapterViewHolder holder, int position) {
-        if (chapters == null) return;
+        if (chapters[position] == null) {
+            holder.getChapter_detail().setText("waiting");
+            return;
+        }
         String detail = chapters[position].chapterNumber + " " +  chapters[position].title ;
         holder.getChapter_detail().setText(detail);
     }

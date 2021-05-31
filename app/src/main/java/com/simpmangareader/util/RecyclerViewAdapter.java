@@ -47,6 +47,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
         else {
             //clear the image view and wait for the data to arrive from the API
+            //TODO: put something here other than nothing when waitng for the cover
             img.setImageBitmap(null);
             Mangadex.GetMangaCover(manga.id, cover -> {
                 synchronized (img) {

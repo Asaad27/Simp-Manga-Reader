@@ -34,7 +34,7 @@ import java.util.List;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 public class Fragment_browse extends Fragment {
-    //TODO(Mouad): maybe we gonna just allocate a big enough array of size 2000 or so instead of an arrayList, and then we keep track of the actual size...
+    //TODO: we need to load more manga when the user reaches the bottom of the page (or near the bottom, for better user experience)
     private final ArrayList<Manga> mData = new ArrayList<>();
     protected Fragment_browse.LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
@@ -46,7 +46,7 @@ public class Fragment_browse extends Fragment {
     private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
 
-    int currentIndex= 0, currentLimit = 100;
+    int currentIndex= 0, currentLimit = 15;
 
 
     public enum LayoutManagerType {
@@ -59,30 +59,31 @@ public class Fragment_browse extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View rootView = inflater.inflate(R.layout.fragment_browse, container, false);
         initRecyclerView(rootView, savedInstanceState);
 
 
 
         //TODO: the data will not be immediately available, we need to display something until the data is ready...
-        Mangadex.FetchManga(currentIndex, currentLimit, result -> {
-            //NOTE(Mouad): result is an array of Manga
-            //UI UPDATED
-            synchronized(mData) {
-                mData.addAll(Arrays.asList(result));
-            }
-            synchronized (mAdapter) {
-                mAdapter.notifyDataSetChanged();
-            }
-            synchronized (mRecyclerView) {
-                mRecyclerView.notifyAll();
-            }
-            currentIndex = currentLimit;
-        }, e -> {
-            //TODO: report failure
-        }, myHandler);
-
+        if (mData.size() == 0) {
+            //fetch data only if there are no manga, unless it's for reloading
+            Mangadex.FetchManga(currentIndex, currentLimit, result -> {
+                //NOTE(Mouad): result is an array of Manga
+                //UI UPDATED
+                synchronized (mData) {
+                    mData.addAll(Arrays.asList(result));
+                }
+                synchronized (mAdapter) {
+                    mAdapter.notifyDataSetChanged();
+                }
+                synchronized (mRecyclerView) {
+                    mRecyclerView.notifyAll();
+                }
+                currentIndex = currentLimit;
+            }, e -> {
+                //TODO: report failure
+            }, myHandler);
+        }
         return rootView;
     }
 

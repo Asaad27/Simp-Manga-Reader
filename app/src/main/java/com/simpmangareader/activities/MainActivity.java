@@ -26,10 +26,9 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 public class MainActivity extends AppCompatActivity {
-    static final int THREAD_POOL_NBR = 10;
+    static final int THREAD_POOL_NBR = 16;
     //create a thread pool
     public static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_NBR);
-    private Handler myHandler = HandlerCompat.createAsync(Looper.myLooper());
 
     private BottomNavigationView bottomNavigationView;
 
@@ -40,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mangadex.init(this.getApplicationContext(), executorService);
         setContentView(R.layout.activity_main);
-
         SetPermissions();
 
         Toolbar main_toolbar = findViewById(R.id.toolbar);
@@ -57,12 +56,12 @@ public class MainActivity extends AppCompatActivity {
         //Allocate cache for Network
         try {
             File httpCacheDir = new File(this.getApplicationContext().getCacheDir(), "http");
-            long httpCacheSize = 50 * 1024 * 1024; // 10 MiB
+            long httpCacheSize = 50 * 1024 * 1024; // 50 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
         } catch (IOException e) {
             Log.i("TAG", "HTTP response cache installation failed:" + e);
         }
-        Mangadex.init(this.getApplicationContext(), executorService);
+
         //start fragment
         Fragment fragment = new Fragment_recent();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
