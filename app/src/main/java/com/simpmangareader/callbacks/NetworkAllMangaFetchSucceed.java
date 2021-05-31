@@ -1,7 +1,7 @@
 package com.simpmangareader.callbacks;
 
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.provider.data.Manga;
 
 public interface NetworkAllMangaFetchSucceed {
-    void onComplete(MangaDetail[] result);
+    void onComplete(Manga[] result);
 }

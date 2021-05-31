@@ -15,19 +15,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 public class Fragment_library extends Fragment {
 
-    private List<MangaDetail> mData;
+    private ArrayList<Manga> mData;
 
     protected Fragment_library.LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
@@ -47,11 +46,9 @@ public class Fragment_library extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Initialize dataset, this data would usually come from a local content provider or
-        // remote server.
-        initDataset();
-
+        mData = new ArrayList<>();
+        //TODO: get data from local storage or db
+        //TODO: we still need to figure out how to store the data locally
     }
 
     @Nullable
@@ -114,28 +111,16 @@ public class Fragment_library extends Fragment {
 
     private void configureOnLongClickRecyclerView() {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener()
-                {
-                    @Override
-                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
-                        Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
-
-                        return true;
-                    }
+                .setOnItemLongClickListener((recyclerView, position, v) -> {
+                    Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                    return true;
                 });
     }
 
     private void configureOnClickRecyclerView()
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v)
-                    {
-                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
-                    }
-                });
+                .setOnItemClickListener((recyclerView, position, v) -> Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show());
     }
 
 
@@ -144,20 +129,6 @@ public class Fragment_library extends Fragment {
         // Save currently selected layout manager.
         savedInstanceState.putSerializable(KEY_LAYOUT_MANAGER, mCurrentLayoutManagerType);
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     * Generates Strings for RecyclerView's adapter. This data would usually come
-     * from a local content provider or remote server.
-     */
-    private void initDataset() {
-        mData = new ArrayList<>();
-
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
     }
 
 }

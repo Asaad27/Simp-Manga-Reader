@@ -2,29 +2,28 @@ package com.simpmangareader.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.simpmangareader.R;
-import com.simpmangareader.provider.data.ChapterDetail;
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.provider.data.Chapter;
+import com.simpmangareader.provider.data.Manga;
+import com.simpmangareader.provider.mangadex.Mangadex;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.MangaChaptersRVadapter;
-import com.simpmangareader.util.RecyclerViewAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.zip.Inflater;
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
@@ -37,8 +36,13 @@ public class MangaDetailActivity extends AppCompatActivity {
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private static final int COLUMN_WIDTH = 130;
-
-    private List<ChapterDetail> mData;
+    private ImageView coverImage;
+    private TextView titleText;
+    private TextView categoryText;
+    private TextView statusText;
+    private TextView descriptionText;
+    Manga manga;
+    Chapter[] chapters;
 
 
 
@@ -53,13 +57,38 @@ public class MangaDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manga_detail);
+        //TODO: maybe adjust the layout and change font sizes so that the texts are visible
+        coverImage = findViewById(R.id.imageView);
+        titleText = findViewById(R.id.manga_detail_title_tv);
+        categoryText = findViewById(R.id.manga_category_title_tv);
+        statusText = findViewById(R.id.manga_detail_status_tv);
+        descriptionText = findViewById(R.id.manga_detail_description_tv);
 
-        initDataset();
         //get data from previous activity
+        chapters = new Chapter[0];
+        manga =  this.getIntent().getExtras().getParcelable("manga");
 
-        List<ChapterDetail> mData =  this.getIntent().getExtras().getParcelableArrayList("mangaChapters");
+        coverImage.setImageBitmap(manga.cover);
+        titleText.setText(manga.title);
+        categoryText.setText((Html.fromHtml(manga.publicationDemographic)));
+        statusText.setText((Html.fromHtml(manga.status)));
+        descriptionText.setText((Html.fromHtml(manga.description)));
 
-
+        Mangadex.FetchAllMangaEnglishChapter(manga.id, result -> {
+            synchronized (chapters){
+                chapters = result;
+                Log.e("Chapters",""+result.length);
+                mAdapter.setChapters(chapters);
+            }
+            synchronized (mAdapter) {
+                mAdapter.notifyDataSetChanged();
+            }
+            synchronized (mRecyclerView) {
+                mRecyclerView.notifyAll();
+            }
+        }, e -> {
+            //TODO: report failure
+        }, HandlerCompat.createAsync(Looper.myLooper()));
 
 
         //Recycler view
@@ -72,13 +101,12 @@ public class MangaDetailActivity extends AppCompatActivity {
                     .getSerializable(KEY_LAYOUT_MANAGER);
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
-        mAdapter = new MangaChaptersRVadapter(mData);
+        mAdapter = new MangaChaptersRVadapter(chapters);
         mRecyclerView.setAdapter(mAdapter);
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, VERTICAL);
         mRecyclerView.addItemDecoration(itemDecor);
 
         this.configureOnClickRecyclerView();
-
 
     }
 
@@ -93,14 +121,9 @@ public class MangaDetailActivity extends AppCompatActivity {
     private void configureOnClickRecyclerView()
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.manga_detail_chapters)
-                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v)
-                    {
-                        Log.e("TAG", "Position : "+position);
-                        Toast.makeText(getBaseContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
-                    }
+                .setOnItemClickListener((recyclerView, position, v) -> {
+                    Log.e("TAG", "Position : "+position);
+                    Toast.makeText(getBaseContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
                 });
     }
 
@@ -130,25 +153,6 @@ public class MangaDetailActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
     }
-
-
-
-    /**
-     * Generates RecyclerView's adapter. This data would usually come
-     * from a local content provider or remote server.
-     */
-    private void initDataset() {
-        mData = new ArrayList<>();
-
-        mData.add(new ChapterDetail("test the chapter",3    ));
-        mData.add(new ChapterDetail("test the chapter",3    ));
-        mData.add(new ChapterDetail("test the chapter",3    ));
-        mData.add(new ChapterDetail("test the chapter",3    ));
-        mData.add(new ChapterDetail("test the chapter",3    ));
-        mData.add(new ChapterDetail("test the chapter",3    ));
-        mData.add(new ChapterDetail("test the chapter",3    ));
-    }
-
 
 }
 
