@@ -1,8 +1,6 @@
 package com.simpmangareader.util;
 
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,22 +8,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.core.os.HandlerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
-import com.simpmangareader.activities.Fragment_recent;
-import com.simpmangareader.provider.data.MangaDetail;
-import com.simpmangareader.services.PicassoLoadingService;
+import com.simpmangareader.provider.data.Manga;
+import com.simpmangareader.provider.mangadex.Mangadex;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>  {
 
-    private List<MangaDetail> mData;
+    private ArrayList<Manga> mData;
 
-    public RecyclerViewAdapter(List<MangaDetail> mData) {
+    public RecyclerViewAdapter(ArrayList<Manga> mData) {
         this.mData = mData;
     }
 
@@ -42,15 +39,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-
-        holder.getImg_book_thumbnail().setImageResource(mData.get(position).getThumbnail());
-        if (mData.get(position).getThumbnailUrl() != null) {
-            PicassoLoadingService picassoLoadingService = new PicassoLoadingService();
-
-            picassoLoadingService.loadImage(mData.get(position).getCoverScrappedUrl(), holder.getImg_book_thumbnail());
-            Log.d("scrappedUrl", "onBindViewHolder: " + mData.get(position).getCoverScrappedUrl());
+        Manga manga = mData.get(position);
+        ImageView img = holder.getImg_book_thumbnail();
+        if (manga.cover != null)
+        {
+            img.setImageBitmap(manga.cover);
         }
-        holder.getTv_manga_title().setText(mData.get(position).getTitle());
+        else {
+            Mangadex.GetMangaCover(manga.id, cover -> {
+                synchronized (img) {
+                    img.post(()->{
+                        img.setImageBitmap(cover);
+                    });
+                }
+                synchronized (manga) {
+                    manga.cover = cover;
+                }
+            }, e -> {
+                //TODO: report failure
+            }, HandlerCompat.createAsync(Looper.getMainLooper()));
+        }
+        holder.getTv_manga_title().setText(mData.get(position).title);
 
     }
 

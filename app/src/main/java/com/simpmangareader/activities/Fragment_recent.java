@@ -14,24 +14,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
-import com.simpmangareader.provider.data.ChapterDetail;
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class Fragment_recent extends Fragment {
 
-    private List<MangaDetail> mData;
+    private ArrayList<Manga> mData;
 
     protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
@@ -55,18 +52,14 @@ public class Fragment_recent extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize dataset, this data would usually come from a local content provider or
-        // remote server.
-        initDataset();
-
+        mData = new ArrayList<>();
+        //TODO: get data from local storage or db about the recent activities
+        //TODO: we still need to figure out how to store the history of read manga
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-
-        //initDataset();
 
         View rootView = inflater.inflate(R.layout.fragment_recent, container, false);
 
@@ -150,7 +143,6 @@ public class Fragment_recent extends Fragment {
                         //passing args and starting chapter detail activity
                         Intent intent = new Intent(getContext(), MangaDetailActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList("mangaChapters",  mData.get(position).getChapters());
                         intent.putExtras(bundle);
                         startActivity(intent);
 
@@ -166,29 +158,6 @@ public class Fragment_recent extends Fragment {
         // Save currently selected layout manager.
         savedInstanceState.putSerializable(KEY_LAYOUT_MANAGER, mCurrentLayoutManagerType);
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     * Generates RecyclerView's adapter. This data would usually come
-     * from a local content provider or remote server.
-     */
-    private void initDataset() {
-        mData = new ArrayList<>();
-        ArrayList<ChapterDetail> mDatas = new ArrayList<>();
-
-        mDatas.add(new ChapterDetail("test the chapter",3    ));
-        mDatas.add(new ChapterDetail("test the chapter",3    ));
-        mDatas.add(new ChapterDetail("test the chapter",3    ));
-        mDatas.add(new ChapterDetail("test the chapter",3    ));
-        mDatas.add(new ChapterDetail("test the chapter",3    ));
-        mDatas.add(new ChapterDetail("test the chapter",3    ));
-        mDatas.add(new ChapterDetail("test the chapter",3    ));
-
-        mData.add(new MangaDetail("test", R.drawable.covertest, mDatas));
-
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
     }
 
 

@@ -7,12 +7,14 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
+import com.simpmangareader.callbacks.NetworkCoverFailed;
+import com.simpmangareader.callbacks.NetworkCoverSucceed;
 import com.simpmangareader.callbacks.NetworkFailed;
 import com.simpmangareader.callbacks.NetworkAllMangaFetchSucceed;
 
 import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
 import com.simpmangareader.provider.data.Chapter;
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.provider.data.Manga;
 
 
 import org.json.JSONArray;
@@ -21,6 +23,8 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.*;
 
@@ -79,21 +83,8 @@ public class Mangadex
 	}
 
 	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkFailed failedCallback, Handler handler, String reqURL) {
-		Log.e("getMangaByURL", "reqURL : " + reqURL);
-
 		try {
-			URL url = new URL(reqURL);
-			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-			BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
-			String data = "";
-			//read data from the stream
-			byte[] contents = new byte[1024];
-			int bytesRead = 0;
-			while ((bytesRead = in.read(contents)) != -1) {
-				data += new String(contents, 0, bytesRead);
-			}
-			MangaDetail[] mangas = ParseJsonToManga(data);
-
+			Manga[] mangas = ParseJsonToManga(getDataFromURL(reqURL));
 			handler.post(() -> successCallback.onComplete(mangas));
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
@@ -102,35 +93,27 @@ public class Mangadex
 	}
 
 
-	private static MangaDetail[] ParseJsonToManga(String data) throws JSONException {
+	private static Manga[] ParseJsonToManga(String data) throws JSONException {
+		//TODO: we can multi thread this function because parsing the manga is independent process
 		JSONObject json = new JSONObject(data);
 		//start parsing
 		JSONArray array = json.getJSONArray("results");
-
 		int count = array.length();
-
-		MangaDetail[] mangas = new MangaDetail[count];
-		CoverScrapper coverScrapper = new CoverScrapper("https://www.anime-planet.com/manga/");
+		Manga[] mangas = new Manga[count];
+		//CoverScrapper coverScrapper = new CoverScrapper("https://www.anime-planet.com/manga/");
 		for (int i = 0; i < count; ++i)
 		{
 			JSONObject result = array.getJSONObject(i);
 			if (!result.getString("result").equals("ok")) continue;
 			JSONObject mangaJson = result.getJSONObject("data");
-			mangas[i] = new MangaDetail();
+			mangas[i] = new Manga();
 			//fill in the fields*
-			mangas[i].setId(mangaJson.getString("id"));
+			mangas[i].id = mangaJson.getString("id");
 			JSONObject mangaAttributeJson = mangaJson.getJSONObject("attributes");
-			mangas[i].setTitle(mangaAttributeJson.getJSONObject("title").getString("en"));
-			mangas[i].setDescription(mangaAttributeJson.getJSONObject("description").getString("en"));
-			mangas[i].setThumbnailUrl(mangaAttributeJson.getJSONObject("links").getString("ap"));
-
-			//TODO : get cover
-			String scrappedCover = coverScrapper.Scrap(mangas[i].getThumbnailUrl());
-			mangas[i].setCoverScrappedUrl(scrappedCover);
-
-			//mangas[i].ChapterCount = mangaAttributeJson.getInt("lastVolume");
-			mangas[i].setStatus(mangaAttributeJson.getString("status"));
-			mangas[i].setPublicationDemographic(mangaAttributeJson.getString("publicationDemographic"));
+			mangas[i].title = mangaAttributeJson.getJSONObject("title").getString("en");
+			mangas[i].description = (mangaAttributeJson.getJSONObject("description").getString("en"));
+			mangas[i].status = (mangaAttributeJson.getString("status"));
+			mangas[i].publicationDemographic = (mangaAttributeJson.getString("publicationDemographic"));
 
 		}
 		return mangas;
@@ -142,23 +125,13 @@ public class Mangadex
 												   final NetworkFailed failedCallback,
 												   final Handler handler)
 	{
-		//TODO(Mouad): compress this stuff, ie factor the repeating parts into functions
+		//TODO: we can multi thread chapter parsing for the same manga reason
 		executor.execute(()->{
 			int totalChaptersCount;
 			int offset = 0;
 			String reqURL = baseURL + "/chapter?manga="+mangaID+"&translatedLanguage[0]=en&limit=100";
 			try {
-				URL url = new URL(reqURL);
-				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-				BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
-				String data = "";
-				//read data from the stream
-				byte[] contents = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = in.read(contents)) != -1) {
-					data += new String(contents, 0, bytesRead);
-				}
-				JSONObject json = new JSONObject(data);
+				JSONObject json = new JSONObject(getDataFromURL(reqURL));
 				totalChaptersCount = json.getInt("total");
 				Chapter[] chapters = new Chapter[totalChaptersCount];
 				do {
@@ -187,17 +160,7 @@ public class Mangadex
 					}
 					offset += fetched;
 					String nextURL = reqURL + "&offset="+offset;
-
-					url = new URL(nextURL);
-					urlConnection = (HttpsURLConnection) url.openConnection();
-					in = new BufferedInputStream(urlConnection.getInputStream());
-					data = "";
-					//read data from the stream
-					contents = new byte[1024];
-					while ((bytesRead = in.read(contents)) != -1) {
-						data += new String(contents, 0, bytesRead);
-					}
-					json = new JSONObject(data);
+					json = new JSONObject(getDataFromURL(nextURL));
 				}
 				while(offset < totalChaptersCount);
 				handler.post(() -> successCallback.onComplete(chapters));
@@ -205,6 +168,21 @@ public class Mangadex
 				handler.post(() -> failedCallback.onError(e));
 			}
 		});
+	}
+
+	private static String getDataFromURL(String reqURL) throws IOException {
+		URL url = new URL(reqURL);
+		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
+		BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
+		String data = "";
+		//read data from the stream
+		byte[] contents = new byte[1024];
+		int bytesRead;
+		while ((bytesRead = in.read(contents)) != -1) {
+			data += new String(contents, 0, bytesRead);
+		}
+		in.close();
+		return data;
 	}
 
 	public static void FetchChapterPictures(Chapter chapter,
@@ -215,24 +193,26 @@ public class Mangadex
 		executor.execute(()->{
 			try {
 				String reqURL = baseURL + "/at-home/server/" + chapter.id;
-				URL url = new URL(reqURL);
-				HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-				BufferedInputStream in = new BufferedInputStream(urlConnection.getInputStream());
-				String data = "";
-				//read data from the stream
-				byte[] contents = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = in.read(contents)) != -1) {
-					data += new String(contents, 0, bytesRead);
-				}
-				JSONObject json = new JSONObject(data);
+				JSONObject json = new JSONObject(getDataFromURL(reqURL));
 				String chapterBaseURL = json.getString("baseUrl");
 				for (int i = 0; i < chapter.data.length; ++i)
 				{
-					String pageURL = chapterBaseURL + "/data/"+chapter.hash+"/"+chapter.data[i];
-					url = new URL(pageURL);
-					Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-					successCallback.onComplete(i,image);
+					//multi thread image loading because loading each image is independent from the other
+					int finalI = i;
+					executor.execute(()->{
+						try {
+							String pageURL = chapterBaseURL + "/data/"+chapter.hash+"/"+chapter.data[finalI];
+							URL url  = new URL(pageURL);
+							InputStream in  = url.openConnection().getInputStream();
+							Bitmap image = BitmapFactory.decodeStream(in);
+							in.close();
+							successCallback.onComplete(finalI,image);
+						} catch (IOException e) {
+							e.printStackTrace();
+							//TODO: make new failure callback for image with page index parameter
+							handler.post(() -> failedCallback.onError(e));
+						}
+					});
 				}
 			}
 			catch (JSONException | IOException e)
@@ -242,5 +222,27 @@ public class Mangadex
 		});
 	}
 
-
+	public static void GetMangaCover(final String mangaID,
+									 final NetworkCoverSucceed successCallback,
+									 final NetworkCoverFailed failedCallback,
+									 final Handler handler)
+	{
+		executor.execute(()->{
+			try {
+				String reqURL = baseURL + "/cover?limit=1&manga[0]=" + mangaID;
+				JSONObject json = new JSONObject(getDataFromURL(reqURL));
+				String fileName = json.getJSONArray("results").getJSONObject(0).getJSONObject("data").getJSONObject("attributes").getString("fileName");
+				String coverURL = "https://uploads.mangadex.org/covers/" + mangaID + "/"+fileName+".256.jpg";
+				URL url = new URL(coverURL);
+				InputStream in  = url.openConnection().getInputStream();
+				Bitmap image = BitmapFactory.decodeStream(in);
+				in.close();
+				successCallback.onComplete(image);
+			}
+			catch (JSONException | IOException e)
+			{
+				handler.post(() -> failedCallback.onError(e));
+			}
+		});
+	}
 }
