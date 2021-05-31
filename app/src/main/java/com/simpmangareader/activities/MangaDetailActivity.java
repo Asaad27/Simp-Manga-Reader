@@ -69,10 +69,10 @@ public class MangaDetailActivity extends AppCompatActivity {
         manga =  this.getIntent().getExtras().getParcelable("manga");
 
         coverImage.setImageBitmap(manga.cover);
-        titleText.setText(manga.title);
-        categoryText.setText((Html.fromHtml(manga.publicationDemographic)));
-        statusText.setText((Html.fromHtml(manga.status)));
-        descriptionText.setText((Html.fromHtml(manga.description)));
+        titleText.setText(Html.fromHtml( "<b>" + manga.title +"</b>"));
+        categoryText.append((Html.fromHtml("<em> " + manga.publicationDemographic + " </em>")));
+        statusText.append((Html.fromHtml("<em> " + (manga.status)+ "</em>")));
+        descriptionText.append((Html.fromHtml("<em> " +manga.description+ "</em>")));
 
         Mangadex.FetchAllMangaEnglishChapter(manga.id, result -> {
             synchronized (chapters){

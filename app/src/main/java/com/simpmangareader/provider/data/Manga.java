@@ -5,6 +5,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Manga implements Parcelable {
     public String id;
@@ -13,6 +15,7 @@ public class Manga implements Parcelable {
     public Bitmap cover;
     public String status;
     public String publicationDemographic;
+
 
     public Manga()
     {

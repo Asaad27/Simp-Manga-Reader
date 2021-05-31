@@ -41,7 +41,9 @@
                 android:id="@+id/manga_detail_title_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="serif"
                 android:text="@string/title"
+                android:textColor="#050505"
                 android:textSize="20sp" />
 
 
@@ -50,18 +52,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/category"
+                android:textColor="#0E0D0D"
                 android:textSize="20sp" />
+
             <TextView
                 android:id="@+id/manga_detail_status_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/status"
+                android:textColor="#050505"
                 android:textSize="20sp" />
+
             <TextView
                 android:id="@+id/manga_detail_description_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/description"
+                android:textColor="#121111"
                 android:textSize="20sp" />
 
 
