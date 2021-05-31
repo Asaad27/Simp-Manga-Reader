@@ -125,8 +125,8 @@ public class Mangadex
 			mangas[i].setThumbnailUrl(mangaAttributeJson.getJSONObject("links").getString("ap"));
 
 			//TODO : get cover
-			//String scrappedCover = coverScrapper.Scrap(mangas[i].getThumbnailUrl());
-			//mangas[i].setCoverScrappedUrl(scrappedCover);
+			String scrappedCover = coverScrapper.Scrap(mangas[i].getThumbnailUrl());
+			mangas[i].setCoverScrappedUrl(scrappedCover);
 
 			//mangas[i].ChapterCount = mangaAttributeJson.getInt("lastVolume");
 			mangas[i].setStatus(mangaAttributeJson.getString("status"));
