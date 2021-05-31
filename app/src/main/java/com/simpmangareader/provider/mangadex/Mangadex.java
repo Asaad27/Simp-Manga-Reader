@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 
+import com.simpmangareader.callbacks.NetworkChapterPageFailed;
 import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
 import com.simpmangareader.callbacks.NetworkCoverFailed;
 import com.simpmangareader.callbacks.NetworkCoverSucceed;
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * This class will be responsible on getting contents from the mangadex api
+ * This class will be responsible on getting contents from the mangadex api.
  * */
 public class Mangadex
 {
@@ -45,8 +46,10 @@ public class Mangadex
 	}
 
 	/**
-	*  Fetch limit manga from MangaDex API starting at offset, and display the result into the view
-	 *  return true if the request is made, else it returns false
+	*  Fetch limit manga from MangaDex API starting at offset, the fetch is done on a separate
+	 *  worker thread
+	 *  if the the call succeed the the successCallback is invoked, else the failedCallback
+	 *  is invoked.
 	**/
 	static public void FetchManga(int offset, int limit,
 								  final NetworkAllMangaFetchSucceed successCallback,
@@ -65,6 +68,12 @@ public class Mangadex
 		});
 	}
 
+	/**
+	 * Fetch limit manga that are their name matches "name" from MangaDex API starting at offset,
+	 * the fetch is done on a separate worker thread
+	 * if the the call succeed the the successCallback is invoked, else the failedCallback
+	 * is invoked.
+	 * **/
 	static public void SearchMangaByName(int offset, int limit, String name,
 										 final NetworkAllMangaFetchSucceed successCallback,
 										 final NetworkFailed failedCallback,
@@ -82,6 +91,10 @@ public class Mangadex
 		});
 	}
 
+	/**
+	 * utility function that fetches manga from mangadex API given that the reqURL is well formed
+	 * if succeed it invoke successCallback, else it invokes failedCallback.
+	 * **/
 	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkFailed failedCallback, Handler handler, String reqURL) {
 		try {
 			Manga[] mangas = ParseJsonToManga(getDataFromURL(reqURL));
@@ -93,13 +106,17 @@ public class Mangadex
 	}
 
 
+	/**
+	 * utility function that parses Manga from a Json string, the parsing is multithreaded,
+	 * the function wait for all the invoked threads to finish before it return.
+	 * **/
 	private static Manga[] ParseJsonToManga(String data) throws JSONException {
 		JSONObject json = new JSONObject(data);
 		//start parsing
 		JSONArray array = json.getJSONArray("results");
 		int count = array.length();
 		Manga[] mangas = new Manga[count];
-		ExecutorService exec =  Executors.newFixedThreadPool(4);
+		//list of the workers that will parse the Manga from json string
 		List<Callable<Object>> calls = new ArrayList<>();
 		for (int i = 0; i < count; ++i)
 		{
@@ -127,15 +144,20 @@ public class Mangadex
 				}
 			}));
 		}
+		//invoke all the workers and wait for them to finish...
 		try {
-			exec.invokeAll(calls);
+			((ExecutorService)executor).invokeAll(calls);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		return mangas;
 	}
 
-
+	/**
+	 * Fetches all the english chapters of a manga identified by mangaID in descending order,
+	 * the function fetches 25 chapter at a time, if the fetch succeeded it invokes successCallback
+	 * else it invoke failedCallback, and continue fetching the remaining chapters.
+	 * **/
 	public static void FetchAllMangaEnglishChapter(final String mangaID,
 												   final NetworkMangaChaptersSucceed successCallback,
 												   final NetworkFailed failedCallback,
@@ -144,7 +166,7 @@ public class Mangadex
 		executor.execute(()->{
 			int totalChaptersCount;
 			int offset = 0;
-			String reqURL = baseURL + "/chapter?manga="+mangaID+"&translatedLanguage[0]=en&limit=25";
+			String reqURL = baseURL + "/chapter?manga="+mangaID+"&translatedLanguage[0]=en&limit=25&order[chapter]=desc";
 			try {
 				JSONObject json = new JSONObject(getDataFromURL(reqURL));
 				totalChaptersCount = json.getInt("total");
@@ -173,7 +195,11 @@ public class Mangadex
 		});
 	}
 
+	/**
+	 * utility function to parse Chapter from json string.
+	 **/
 	private static Chapter[] ParseChapter(JSONArray array, int fetched) throws JSONException {
+		//TODO: see if it's worth it running this Parsing on parallel too
 		Chapter[] chapters = new Chapter[fetched];
 		for (int i = 0; i < fetched; ++i) {
 			JSONObject result = array.getJSONObject(i);
@@ -197,7 +223,9 @@ public class Mangadex
 		return chapters;
 	}
 
-
+	/**
+	 * utility function to open connection and get data from a url, the data is returned as string.
+	 * **/
 	private static String getDataFromURL(String reqURL) throws IOException {
 		URL url = new URL(reqURL);
 		HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
@@ -213,9 +241,14 @@ public class Mangadex
 		return data;
 	}
 
+	/**
+	 * Fetches page images of a chapter, the images are fetched in parallel, if an image is fetched
+	 * the succeedCallback is invoked with the bitmap of the image and the page index, if it failed
+	 * failedCallback is invoked, if it's a general error the page index is -1.
+	 * **/
 	public static void FetchChapterPictures(Chapter chapter,
 											final NetworkChapterPageSucceed successCallback,
-											final NetworkFailed failedCallback,
+											final NetworkChapterPageFailed failedCallback,
 											final Handler handler)
 	{
 		executor.execute(()->{
@@ -237,18 +270,22 @@ public class Mangadex
 							successCallback.onComplete(finalI,image);
 						} catch (IOException e) {
 							e.printStackTrace();
-							handler.post(() -> failedCallback.onError(e));
+							handler.post(() -> failedCallback.onError(e, finalI));
 						}
 					});
 				}
 			}
 			catch (JSONException | IOException e)
 			{
-				handler.post(() -> failedCallback.onError(e));
+				handler.post(() -> failedCallback.onError(e, -1));
 			}
 		});
 	}
 
+	/**
+	 * Fetches cover of the manga identified by mangaID, if succeed successCallback is invoked with
+	 * cover bitmap as parameter, in case of a failure, failedCallback is invoked.
+	 * **/
 	public static void GetMangaCover(final String mangaID,
 									 final NetworkCoverSucceed successCallback,
 									 final NetworkCoverFailed failedCallback,
