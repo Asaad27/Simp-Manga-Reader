@@ -162,7 +162,9 @@ public class Fragment_browse extends Fragment {
                         //NOTE(Mouad): result is an array of Manga
                         //UI UPDATED
                         synchronized (mData) {
-                            mData.addAll(Arrays.asList(result));
+                            for(int i = 0; i <= 10; ++i)
+                                mData.add(result[i]);
+
                         }
                         synchronized (mAdapter) {
                             mAdapter.notifyDataSetChanged();
@@ -171,6 +173,9 @@ public class Fragment_browse extends Fragment {
                             mRecyclerView.notifyAll();
                         }
 
+
+                        System.out.println("size : " + mData.size());
+                        System.out.printf("currLimint : " + currentLimit);
                         is_loading = false;
                         currentIndex = currentLimit + 1;
                         currentLimit = currentIndex + 10;
