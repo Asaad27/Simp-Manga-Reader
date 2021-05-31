@@ -44,12 +44,6 @@
                 android:text="@string/title"
                 android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/manga_detail_author_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/author"
-                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/manga_category_title_tv"
@@ -57,13 +51,19 @@
                 android:layout_height="wrap_content"
                 android:text="@string/category"
                 android:textSize="20sp" />
-
             <TextView
-                android:id="@+id/manga_detail_artist_tv"
+                android:id="@+id/manga_detail_status_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/artist"
+                android:text="@string/status"
                 android:textSize="20sp" />
+            <TextView
+                android:id="@+id/manga_detail_description_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textSize="20sp" />
+
 
 
         </LinearLayout>
