@@ -103,7 +103,7 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
                 Looper.loop();
             }
             */
-        }, e -> {
+        }, (finalI, e) -> {
             //TODO: report failure
         }, myHandler);
 
