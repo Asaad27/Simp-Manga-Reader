@@ -101,7 +101,6 @@ public class MangaDetailActivity extends AppCompatActivity {
                 },
                 HandlerCompat.createAsync(Looper.myLooper()));
 
-
         //Recycler view
         mRecyclerView = findViewById(R.id.manga_detail_rv_chapters);
         mLayoutManager = new LinearLayoutManager(this);
