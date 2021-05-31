@@ -9,17 +9,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
-import com.simpmangareader.provider.data.ChapterDetail;
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.provider.data.Chapter;
 
 import java.util.List;
 
 public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRVadapter.MangaChapterViewHolder> {
 
-    private List<ChapterDetail> mData;
+    private Chapter[] chapters;
 
-    public MangaChaptersRVadapter(List<ChapterDetail> mData) {
-        this.mData = mData;
+    public MangaChaptersRVadapter(Chapter[] chapters) {
+        this.chapters = chapters;
     }
 
     @NonNull
@@ -33,13 +32,13 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
 
     @Override
     public void onBindViewHolder(@NonNull MangaChapterViewHolder holder, int position) {
-        String detail = mData.get(position).getNumber() + " " +  mData.get(position).getTitle() ;
+        String detail = chapters[position].chapterNumber + " " +  chapters[position].title ;
         holder.getChapter_detail().setText(detail);
     }
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return chapters.length;
     }
 
     public static class MangaChapterViewHolder extends RecyclerView.ViewHolder{

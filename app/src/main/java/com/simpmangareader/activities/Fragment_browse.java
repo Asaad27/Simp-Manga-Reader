@@ -15,13 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
-import com.simpmangareader.provider.data.ChapterDetail;
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
@@ -34,7 +32,8 @@ import java.util.List;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 public class Fragment_browse extends Fragment {
-    private final List<MangaDetail> mData = new ArrayList<>();
+    //TODO(Mouad): maybe we gonna just allocate a big enough array of size 2000 or so instead of an arrayList, and then we keep track of the actual size...
+    private final ArrayList<Manga> mData = new ArrayList<>();
     protected Fragment_browse.LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
     protected RecyclerViewAdapter mAdapter;
@@ -72,12 +71,7 @@ public class Fragment_browse extends Fragment {
 
         //TODO: the data will not be immediately available, we need to display something until the data is ready...
         Mangadex.FetchManga(currentIndex, currentLimit, result -> {
-            //TODO: update UI
             //NOTE(Mouad): result is an array of Manga
-           for (int i = 0; i < result.length; i++)
-                Log.e("OncreateView : mangas", result[i].getId() + " " + result[i].getTitle() + " url: " + result[i].getThumbnailUrl());
-            Log.e("OncreateView", "Manga size : " + result.length);
-            Toast.makeText(getContext(),"Manga size : " + result.length, Toast.LENGTH_LONG).show();
             //UI UPDATED
             synchronized(mData) {
                 mData.addAll(Arrays.asList(result));
@@ -145,36 +139,24 @@ public class Fragment_browse extends Fragment {
 
     private void configureOnLongClickRecyclerView() {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener()
-                {
-                    @Override
-                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
-                        Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
-
-                        return true;
-                    }
+                .setOnItemLongClickListener((recyclerView, position, v) -> {
+                    Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                    return true;
                 });
     }
 
     private void configureOnClickRecyclerView()
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v)
-                    {
-                        Log.e("TAG", "Position : "+position);
-                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                .setOnItemClickListener((recyclerView, position, v) -> {
+                    Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
-                        //passing args and starting chapter detail activity
-                        Intent intent = new Intent(getContext(), MangaDetailActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList("mangaChapters",  mData.get(position).getChapters());
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-
-                    }
+                    //passing args and starting chapter detail activity
+                    Intent intent = new Intent(getContext(), MangaDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("manga",  mData.get(position));
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 });
     }
 

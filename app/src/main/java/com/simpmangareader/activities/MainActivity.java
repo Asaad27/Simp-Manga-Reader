@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.http.HttpResponseCache;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,8 +18,6 @@ import android.view.Menu;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.simpmangareader.R;
-import com.simpmangareader.callbacks.NetworkChapterPageSucceed;
-import com.simpmangareader.callbacks.NetworkFailed;
 import com.simpmangareader.provider.mangadex.Mangadex;
 
 import java.io.File;
@@ -29,8 +26,9 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 public class MainActivity extends AppCompatActivity {
+    static final int THREAD_POOL_NBR = 10;
     //create a thread pool
-    public static ExecutorService executorService = Executors.newFixedThreadPool(4);
+    public static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_NBR);
     private Handler myHandler = HandlerCompat.createAsync(Looper.myLooper());
 
     private BottomNavigationView bottomNavigationView;
@@ -55,25 +53,12 @@ public class MainActivity extends AppCompatActivity {
         //Allocate cache for Network
         try {
             File httpCacheDir = new File(this.getApplicationContext().getCacheDir(), "http");
-            long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+            long httpCacheSize = 50 * 1024 * 1024; // 10 MiB
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
         } catch (IOException e) {
             Log.i("TAG", "HTTP response cache installation failed:" + e);
         }
         Mangadex.init(this.getApplicationContext(), executorService);
-        //test with solo leveling
-        Mangadex.FetchAllMangaEnglishChapter("32d76d19-8a05-4db0-9fc2-e0b0648fe9d0", result -> {
-            Log.e("Success", String.valueOf(result.length));
-            Mangadex.FetchChapterPictures(result[0], (pageNumber, pageImage) -> {
-                Log.e("PageImage", pageImage.getHeight() + " x "+ pageImage.getWidth());
-            }, e -> {
-                e.printStackTrace();
-                Log.e("Error", e.getMessage());
-            }, myHandler);
-        }, e -> {
-            e.printStackTrace();
-            Log.e("Error", e.getMessage());
-        }, myHandler);
         //start fragment
         Fragment fragment = new Fragment_recent();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
