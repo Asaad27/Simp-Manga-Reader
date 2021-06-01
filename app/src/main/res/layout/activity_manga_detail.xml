@@ -72,7 +72,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/description"
                 android:textColor="#121111"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:scrollbars="vertical"/>
 
 
 
