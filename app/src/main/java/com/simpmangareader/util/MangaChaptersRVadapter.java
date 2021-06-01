@@ -53,7 +53,7 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
     @Override
     public void onBindViewHolder(@NonNull MangaChapterViewHolder holder, int position) {
         if (chapters[position] == null) {
-            holder.getChapter_detail().setText("waiting");
+            holder.getChapter_detail().setText("special chapter : hors série");
             return;
         }
         String title = chapters[position].MangaTitle;
