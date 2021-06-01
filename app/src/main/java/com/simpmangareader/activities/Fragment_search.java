@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,7 +32,8 @@ import java.util.Arrays;
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
-public class Fragment_browse extends Fragment {
+public class Fragment_search extends Fragment {
+    String query;
     private final ArrayList<Manga> mData = new ArrayList<>();
     protected Fragment_browse.LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
@@ -39,32 +41,28 @@ public class Fragment_browse extends Fragment {
     protected RecyclerView.LayoutManager mLayoutManager;
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
-    private static final int SPAN_COUNT = 4;
     private static final int COLUMN_WIDTH = 130;
-    private static final int DATASET_COUNT = 60;
 
-    int count = 0;
     int currentIndex= 0, currentLimit = 15;
     boolean is_loading = false;
 
 
-    public enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
-        LINEAR_LAYOUT_MANAGER
-    }
-
     private final Handler myHandler = HandlerCompat.createAsync(Looper.myLooper());
+
+    public Fragment_search(String query) {
+        this.query = query;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_browse, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_search_results, container, false);
         initRecyclerView(rootView, savedInstanceState);
-
 
         if (mData.size() == 0) {
             FetchMoreManga();
         }
+
         return rootView;
     }
 
@@ -78,7 +76,7 @@ public class Fragment_browse extends Fragment {
         else{
             // it's a retry fetch
         }
-        Mangadex.FetchManga(currentIndex, currentLimit, result -> {
+        Mangadex.SearchMangaByName(currentIndex, currentLimit, query, result -> {
             //NOTE(Mouad): result is an array of Manga
             //UI UPDATED
             synchronized (mData) {
@@ -220,4 +218,3 @@ public class Fragment_browse extends Fragment {
 
 
 }
-

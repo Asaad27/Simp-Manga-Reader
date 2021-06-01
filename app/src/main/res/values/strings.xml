@@ -4,14 +4,11 @@
     <string name="library">Library</string>
     <string name="recent">Recent</string>
     <string name="artist">Artist :</string>
-    <string name="category">Category : </string>
-    <string name="author">Author : </string>
-    <string name="title">Title : </string>
-    <string name="description">Description : </string>
-    <string name="status">Status : </string>
-    <string name="chapter_details">Chapter details</string>
-    <string name="contentdesc">Manga cover</string>
-    <string name="Latest">Latest</string>
-    <string name="Top">Top rated</string>
-    <string name="alpha">A - Z</string>
+    <string name="category">Category :</string>
+    <string name="author">Author :</string>
+    <string name="title">Title :</string>
+    <string name="description">Description :</string>
+    <string name="status">Status :</string>
+    <string name="chapter_details">chapter details</string>
+    <string name="search_hint">Search Manga by title</string>
 </resources>
