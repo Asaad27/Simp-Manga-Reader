@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private final Fragment_browse fragment_browse = new Fragment_browse();
     private final Fragment_recent fragment_recent = new Fragment_recent();
     private final Fragment_library fragment_library = new Fragment_library();
+    Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(main_toolbar);   //make the toolbar act like an actionbar
         try                                  //remove app name from toolbar
         {
-            Objects.requireNonNull(getSupportActionBar()).setTitle("lol");
+            Objects.requireNonNull(getSupportActionBar()).setTitle("Manga Reader");
         }
         catch (NullPointerException ignored){}
 
@@ -59,9 +60,8 @@ public class MainActivity extends AppCompatActivity {
             Log.i("TAG", "HTTP response cache installation failed:" + e);
         }
 
-        //start fragment
-        Fragment fragment = new Fragment_recent();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+        currentFragment = fragment_recent;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, currentFragment).commit();
     }
 
     @Override
@@ -83,21 +83,21 @@ public class MainActivity extends AppCompatActivity {
     //make navigationbar clickable, navigation between fragments
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener =
         item -> {
-            Fragment selectedFragment = null;
+
 
             switch (item.getItemId()){
                 case R.id.bt_recent:
-                    selectedFragment = fragment_recent;
+                    currentFragment = fragment_recent;
                     break;
                 case R.id.bt_browse:
-                    selectedFragment = fragment_browse;
+                    currentFragment = fragment_browse;
                     break;
                 case R.id.bt_library:
-                    selectedFragment = fragment_library;
+                    currentFragment = fragment_library;
                     break;
             }
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, currentFragment).commit();
 
             return true;
         };
