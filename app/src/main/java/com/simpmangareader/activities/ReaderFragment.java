@@ -27,6 +27,8 @@ import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
 
+import java.util.Arrays;
+
 public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBarChangeListener{
 
     private Chapter chapter;
@@ -74,7 +76,7 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
         viewPager.addOnPageChangeListener(viewPagerPageChangeListener);
 
         setCurrentItem(selectedPosition);
-        for (int i =0; i < isPageLoading.length; ++i) isPageLoading[i] = true;
+        Arrays.fill(isPageLoading, true);
         Mangadex.FetchAllChapterPictures(chapter, (pageNumber, pageImage) -> {
             synchronized (pagesBitmap) {
                 pagesBitmap[pageNumber] = pageImage;
@@ -83,8 +85,11 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
             {
                 isPageLoading[pageNumber] = false;
             }
+            synchronized (myViewPagerAdapter) {
+                myViewPagerAdapter.notifyDataSetChanged();
+            }
             synchronized (viewPager) {
-                viewPager.post(()->{viewPager.setAdapter(myViewPagerAdapter);});
+                viewPager.notifyAll();
             }
         }, (e, pageNumber) -> {
             synchronized (isPageLoading)
@@ -136,12 +141,6 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Mangadex.CancelPagesLoading();
     }
 
     //may use this method to load the next bitmap directly instead of waiting for the thread to randomly do it
@@ -239,6 +238,11 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
         }
     }
 }

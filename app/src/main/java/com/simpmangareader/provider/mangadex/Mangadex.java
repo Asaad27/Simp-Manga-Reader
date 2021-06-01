@@ -38,7 +38,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class Mangadex
 {
 	public static final String baseURL = "https://api.mangadex.org";
-	static final int THREAD_POOL_NBR = 16;
+	static final int THREAD_POOL_NBR = 8;
 	//create a thread pool
 	public static ExecutorService mangaExecutor;
 	public static ExecutorService chapterExecutor;
@@ -103,12 +103,51 @@ public class Mangadex
 	 * **/
 	private static void GetMangaByURL(NetworkAllMangaFetchSucceed successCallback, NetworkFailed failedCallback, Handler handler, String reqURL) {
 		try {
-			Manga[] mangas = ParseJsonToManga(getDataFromURL(reqURL));
+			String data = getDataFromURL(reqURL);
+			Manga[] mangas = ParseJsonToManga(data);
 			handler.post(() -> successCallback.onComplete(mangas));
 		} catch (JSONException e) {
 			e.printStackTrace();
 			handler.post(() -> failedCallback.onError(e));
 		}
+	}
+
+
+	/**
+	 * Fetches all the english chapters of a manga identified by mangaID in descending order,
+	 * the function fetches 25 chapter at a time, if the fetch succeeded it invokes successCallback
+	 * else it invoke failedCallback, and continue fetching the remaining chapters.
+	 * **/
+	public static void FetchAllMangaEnglishChapter(final String mangaID,
+												   final NetworkMangaChaptersSucceed successCallback,
+												   final NetworkFailed failedCallback,
+												   final Handler handler)
+	{
+		chapterExecutor.execute(()->{
+			int totalChaptersCount;
+			int offset = 0;
+			String reqURL = baseURL + "/chapter?manga="+mangaID+"&translatedLanguage[0]=en&limit=25&order[chapter]=desc";
+			try {
+				JSONObject json = new JSONObject(getDataFromURL(reqURL));
+				totalChaptersCount = json.getInt("total");
+				//Chapter[] chapters = new Chapter[totalChaptersCount];
+				do {
+					JSONArray array = json.getJSONArray("results");
+					int fetched = array.length();
+					int finalOffset = offset;
+					chapterExecutor.execute(()->{
+						Chapter[] chapters = ParseChapter(array, fetched);
+						handler.post(() -> successCallback.onComplete(chapters, finalOffset, totalChaptersCount));
+					});
+					offset += fetched;
+					String nextURL = reqURL + "&offset="+offset;
+					json = new JSONObject(getDataFromURL(nextURL));
+				}
+				while(offset < totalChaptersCount);
+			} catch (JSONException e) {
+				handler.post(() -> failedCallback.onError(e));
+			}
+		});
 	}
 
 
@@ -146,7 +185,7 @@ public class Mangadex
 				}
 				catch (JSONException e)
 				{
-					//do nothing
+					e.printStackTrace();
 				}
 			}));
 		}
@@ -160,55 +199,10 @@ public class Mangadex
 	}
 
 	/**
-	 * Fetches all the english chapters of a manga identified by mangaID in descending order,
-	 * the function fetches 25 chapter at a time, if the fetch succeeded it invokes successCallback
-	 * else it invoke failedCallback, and continue fetching the remaining chapters.
-	 * **/
-	public static void FetchAllMangaEnglishChapter(final String mangaID,
-												   final NetworkMangaChaptersSucceed successCallback,
-												   final NetworkFailed failedCallback,
-												   final Handler handler)
-	{
-		if (chapterExecutor.isShutdown())
-		{
-			chapterExecutor = Executors.newFixedThreadPool(THREAD_POOL_NBR);
-		}
-		chapterExecutor.execute(()->{
-			int totalChaptersCount;
-			int offset = 0;
-			String reqURL = baseURL + "/chapter?manga="+mangaID+"&translatedLanguage[0]=en&limit=25&order[chapter]=desc";
-			try {
-				JSONObject json = new JSONObject(getDataFromURL(reqURL));
-				totalChaptersCount = json.getInt("total");
-				//Chapter[] chapters = new Chapter[totalChaptersCount];
-				do {
-					JSONArray array = json.getJSONArray("results");
-					int fetched = array.length();
-					int finalOffset = offset;
-					chapterExecutor.execute(()->{
-						try {
-							Chapter[] chapters = ParseChapter(array, fetched);
-							handler.post(() -> successCallback.onComplete(chapters, finalOffset, totalChaptersCount));
-						}
-						catch (JSONException e) {
-							handler.post(() -> failedCallback.onError(e));
-						}
-					});
-					offset += fetched;
-					String nextURL = reqURL + "&offset="+offset;
-					json = new JSONObject(getDataFromURL(nextURL));
-				}
-				while(offset < totalChaptersCount);
-			} catch (JSONException e) {
-				handler.post(() -> failedCallback.onError(e));
-			}
-		});
-	}
-
-	/**
 	 * utility function to parse Chapter from json string.
 	 **/
-	private static Chapter[] ParseChapter(JSONArray array, int fetched) throws JSONException {
+	private static Chapter[] ParseChapter(JSONArray array, int fetched)
+	{
 		Chapter[] chapters = new Chapter[fetched];
 		List<Callable<Object>> calls = new ArrayList<>();
 
@@ -236,7 +230,7 @@ public class Mangadex
 				}
 				catch (JSONException e)
 				{
-					//do nothing
+					e.printStackTrace();
 				}
 			}));
 			//invoke all the workers and wait for them to finish...
@@ -257,29 +251,28 @@ public class Mangadex
 		try {
 			URL url = new URL(reqURL);
 			HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-			try {
-				InputStream inputStream = urlConnection.getInputStream();
-				BufferedInputStream in = new BufferedInputStream(inputStream);
-				//read data from the stream
-				byte[] contents = new byte[1024];
-				int bytesRead;
-				try {
+			if (urlConnection.getResponseCode() == HttpsURLConnection.HTTP_OK)
+			{
+				try (InputStream inputStream = urlConnection.getInputStream()) {
+					BufferedInputStream in = new BufferedInputStream(inputStream);
+					//read data from the stream
+					byte[] contents = new byte[1024];
+					int bytesRead;
 					while ((bytesRead = in.read(contents)) != -1) {
 						data.append(new String(contents, 0, bytesRead));
 					}
 				}
-				finally {
-					inputStream.close();
-				}
 			}
-			finally {
-				urlConnection.disconnect();
+			else
+			{
+				System.out.println(reqURL);
 			}
 		}
-		finally
+		catch (IOException e)
 		{
-			return data.toString();
+			e.printStackTrace();
 		}
+		return data.toString();
 	}
 
 	/**
@@ -292,10 +285,6 @@ public class Mangadex
 											final NetworkChapterPageFailed failedCallback,
 											final Handler handler)
 	{
-		if (pagesExecutor.isShutdown())
-		{
-			pagesExecutor = Executors.newFixedThreadPool(THREAD_POOL_NBR);
-		}
 		pagesExecutor.execute(()->{
 			try {
 				String reqURL = baseURL + "/at-home/server/" + chapter.id;
@@ -310,18 +299,16 @@ public class Mangadex
 							String pageURL = chapterBaseURL + "/data/"+chapter.hash+"/"+chapter.data[finalI];
 							URL url  = new URL(pageURL);
 							HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
-							try {
-								InputStream in = httpsURLConnection.getInputStream();
-								try {
+							if (httpsURLConnection.getResponseCode() == HttpsURLConnection.HTTP_OK)
+							{
+								try (InputStream in = httpsURLConnection.getInputStream()) {
 									Bitmap image = BitmapFactory.decodeStream(in);
 									handler.post(() -> successCallback.onComplete(finalI, image));
 								}
-								finally {
-									in.close();
-								}
 							}
-							finally {
-								httpsURLConnection.disconnect();
+							else
+							{
+								System.out.println(reqURL);
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -341,10 +328,6 @@ public class Mangadex
 										   final NetworkFailed failedCallback,
 										   final Handler handler)
 	{
-		if (pagesExecutor.isShutdown())
-		{
-			pagesExecutor = Executors.newFixedThreadPool(THREAD_POOL_NBR);
-		}
 		pagesExecutor.execute(()->{
 			try {
 				String reqURL = baseURL + "/at-home/server/" + chapter.id;
@@ -355,19 +338,16 @@ public class Mangadex
 						String pageURL = chapterBaseURL + "/data/"+chapter.hash+"/"+chapter.data[pageNumber];
 						URL url  = new URL(pageURL);
 						HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
-						InputStream in  = httpsURLConnection.getInputStream();
-						try {
-							Bitmap image = null;
-							try {
-								image = BitmapFactory.decodeStream(in);
-							} finally {
-								in.close();
+						if (httpsURLConnection.getResponseCode() == HttpsURLConnection.HTTP_OK)
+						{
+							try (InputStream in = httpsURLConnection.getInputStream()) {
+								Bitmap image = BitmapFactory.decodeStream(in);
+								handler.post(() -> successCallback.onComplete(image));
 							}
-							Bitmap finalImage = image;
-							handler.post(() -> successCallback.onComplete(finalImage));
 						}
-						finally {
-							httpsURLConnection.disconnect();
+						else
+						{
+							System.out.println(reqURL);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -399,18 +379,16 @@ public class Mangadex
 				String coverURL = "https://uploads.mangadex.org/covers/" + mangaID + "/"+fileName+".256.jpg";
 				URL url = new URL(coverURL);
 				HttpsURLConnection httpsURLConnection = (HttpsURLConnection) url.openConnection();
-				try {
-					InputStream in = httpsURLConnection.getInputStream();
-					try {
+				if (httpsURLConnection.getResponseCode() == HttpsURLConnection.HTTP_OK)
+				{
+					try (InputStream in = httpsURLConnection.getInputStream()) {
 						Bitmap image = BitmapFactory.decodeStream(in);
-						successCallback.onComplete(image);
-					}
-					finally {
-						in.close();
+						handler.post(()->successCallback.onComplete(image));
 					}
 				}
-				finally {
-					httpsURLConnection.disconnect();
+				else
+				{
+					System.out.println(reqURL);
 				}
 			}
 			catch (Exception e)
@@ -418,19 +396,5 @@ public class Mangadex
 				handler.post(() -> failedCallback.onError(e));
 			}
 		});
-	}
-
-	public static void CancelChapterLoading()
-	{
-		if (!chapterExecutor.isShutdown()) {
-			chapterExecutor.shutdownNow();
-		}
-	}
-
-	public static void CancelPagesLoading()
-	{
-		if (!pagesExecutor.isShutdown()) {
-			pagesExecutor.shutdownNow();
-		}
 	}
 }
