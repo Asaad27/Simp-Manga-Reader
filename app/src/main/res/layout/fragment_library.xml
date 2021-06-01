@@ -2,10 +2,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:orientation="vertical">
 
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/second_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:minHeight="?attr/actionBarSize"
+        app:titleTextColor="@android:color/white"
+        app:itemTextColor="@color/second_nav_color"
+        app:itemIconTint="@color/second_nav_color"
+        app:itemRippleColor="@color/blue"
+        app:menu="@menu/second_toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_library_recycler_view"

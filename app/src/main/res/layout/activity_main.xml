@@ -23,16 +23,7 @@
             android:background="@android:color/holo_red_light"
             android:minHeight="?attr/actionBarSize"
             app:titleTextColor="@color/black" />
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/second_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/black"
-            android:minHeight="?attr/actionBarSize"
-            app:titleTextColor="@android:color/white"
 
-            app:itemRippleColor="@color/blue"
-            app:menu="@menu/second_toolbar"/>
 
         <FrameLayout
             android:id="@+id/fragment_container"

@@ -3,19 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/app_bar_search"
+        android:id="@+id/toolbar_search_btn"
         android:icon="@drawable/ic_search_black_24dp"
         android:title="Search"
         app:showAsAction="always"
+        android:visible="false"
         app:actionViewClass="android.widget.SearchView" />
-<group>
-    <item android:title="Item1" />
-    <item android:title="Item2" />
-    <item android:title="Item3" />
-    <item android:title="Item4" />
-
-</group>
-
 
 
 </menu>
