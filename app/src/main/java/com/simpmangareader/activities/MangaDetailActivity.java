@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.os.HandlerCompat;
@@ -120,7 +121,7 @@ public class MangaDetailActivity extends AppCompatActivity {
                     }
                 },
                 e -> {
-                    //TODO: report failure
+                    Toast.makeText(getApplicationContext(), "fetching mangas failed", Toast.LENGTH_LONG ).show();
                 },
                 HandlerCompat.createAsync(Looper.myLooper()));
 
@@ -160,42 +161,53 @@ public class MangaDetailActivity extends AppCompatActivity {
 
     }
     public void bt_Last(MenuItem item) {
-        Arrays.sort(chapters, new Comparator<Chapter>(){
+        try {
+            Arrays.sort(chapters, new Comparator<Chapter>(){
 
-            @Override
-            public int compare(Chapter o1, Chapter o2) {
-                int res = -1;
-                try {
-                    res = (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
+                @Override
+                public int compare(Chapter o1, Chapter o2) {
+                    int res = -1;
+                    try {
+                        res = (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
+                    }
+                    catch (Exception e){
+                        Log.e(TAG, "compare: exception " + e );
+                        return -1;
+                    }
+                    return (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
                 }
-                catch (Exception e){
-                    Log.e(TAG, "compare: exception " + e );
-                    return -1;
-                }
-                return (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
-            }
-        });
-        mAdapter.notifyDataSetChanged();
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         item.setChecked(true);
-
+        mAdapter.notifyDataSetChanged();
     }
     public void bt_First(MenuItem item) {
-        Arrays.sort(chapters, new Comparator<Chapter>(){
 
-            @Override
-            public int compare(Chapter o1, Chapter o2) {
-                int res = -1;
-                try {
-                    res = (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
-                }
-                catch (Exception e){
-                    Log.e(TAG, "compare: exception " + e );
-                    return 1;
-                }
+        try {
+            Arrays.sort(chapters, new Comparator<Chapter>(){
 
-                return (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
-            }
-        });
+                @Override
+                public int compare(Chapter o1, Chapter o2) {
+                    int res = -1;
+                    try {
+                        res = (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
+                    }
+                    catch (Exception e){
+                        Log.e(TAG, "compare: exception " + e );
+                        return 1;
+                    }
+
+                    return (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
         mAdapter.notifyDataSetChanged();
         item.setChecked(true);
     }
