@@ -1,9 +1,11 @@
 package com.simpmangareader.activities;
 
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.SearchView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private final Fragment_recent fragment_recent = new Fragment_recent();
     private final Fragment_library fragment_library = new Fragment_library();
     Fragment currentFragment;
+    private MenuItem searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
             HttpResponseCache.install(httpCacheDir, httpCacheSize);
         } catch (IOException ignored) {}
 
+
         currentFragment = fragment_recent;
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, currentFragment).commit();
     }
@@ -71,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(R.menu.main_toolbar, menu);
 
         MenuItem searchViewItem = menu.findItem(R.id.search);
+        this.searchView = searchViewItem;
+        searchView.setVisible(false);
         SearchView searchView = (SearchView) searchViewItem.getActionView();
         searchView.setIconifiedByDefault(false);
         searchView.requestFocus();
@@ -114,12 +120,16 @@ public class MainActivity extends AppCompatActivity {
             item -> {
                 switch (item.getItemId()){
                     case R.id.bt_recent:
+                        searchView.setVisible(false);
                         currentFragment = fragment_recent;
+
                         break;
                     case R.id.bt_browse:
+                        searchView.setVisible(true);
                         currentFragment = fragment_browse;
                         break;
                     case R.id.bt_library:
+                        searchView.setVisible(false);
                         currentFragment = fragment_library;
                         break;
                 }
