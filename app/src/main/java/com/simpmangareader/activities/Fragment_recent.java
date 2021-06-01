@@ -17,6 +17,7 @@ import static com.simpmangareader.database.SharedPreferencesHelper.recPreference
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -130,7 +131,7 @@ public class Fragment_recent extends Fragment {
     private void configureOnLongClickRecyclerView() {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
                 .setOnItemLongClickListener((recyclerView, position, v) -> {
-                    Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
                     return true;
                 });
@@ -142,18 +143,21 @@ public class Fragment_recent extends Fragment {
                 .setOnItemClickListener((recyclerView, position, v) -> {
                    // Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
-                    //passing args and starting chapter detail activity
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    /*Bundle bundle = new Bundle();
-                    synchronized (mData.get(position)) {
-                        bundle.putParcelable("mangas", mData.get(position));
-                    }
-                    intent.putExtras(bundle);*/
-                    startActivity(intent);
+                    startFragment(mData[position]);
                 });
     }
 
+    public void startFragment(Chapter chapter) {
 
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("manga", chapter);
+        bundle.putInt("position", 0);
+        assert getFragmentManager() != null;
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ReaderFragment newFragment = ReaderFragment.newInstance();
+        newFragment.setArguments(bundle);
+        newFragment.show(ft, "slideshow");
+    }
 
 
     @Override
