@@ -118,35 +118,27 @@ public class Fragment_recent extends Fragment {
 
     private void configureOnLongClickRecyclerView() {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener()
-                {
-                    @Override
-                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
-                        Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                .setOnItemLongClickListener((recyclerView, position, v) -> {
+                    Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
-                        return true;
-                    }
+                    return true;
                 });
     }
 
     private void configureOnClickRecyclerView()
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v)
-                    {
-                        Log.e("TAG", "Position : "+position);
-                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                .setOnItemClickListener((recyclerView, position, v) -> {
+                    Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
-                        //passing args and starting chapter detail activity
-                        Intent intent = new Intent(getContext(), MangaDetailActivity.class);
-                        Bundle bundle = new Bundle();
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-
+                    //passing args and starting chapter detail activity
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    /*Bundle bundle = new Bundle();
+                    synchronized (mData.get(position)) {
+                        bundle.putParcelable("mangas", mData.get(position));
                     }
+                    intent.putExtras(bundle);*/
+                    startActivity(intent);
                 });
     }
 

@@ -1,5 +1,6 @@
 package com.simpmangareader.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -118,6 +119,7 @@ public class Fragment_library extends Fragment {
 
     }
 
+    //TODO(me): add remove from fav dialog
     private void configureOnLongClickRecyclerView() {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
                 .setOnItemLongClickListener((recyclerView, position, v) -> {
@@ -129,7 +131,16 @@ public class Fragment_library extends Fragment {
     private void configureOnClickRecyclerView()
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemClickListener((recyclerView, position, v) -> Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show());
+                .setOnItemClickListener((recyclerView, position, v) ->{
+                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(getContext(), MangaDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("mangas", mData.get(position));
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                });
+
     }
 
 
