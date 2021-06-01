@@ -52,6 +52,7 @@ public class MangaDetailActivity extends AppCompatActivity {
     private TextView categoryText;
     private TextView statusText;
     private TextView descriptionText;
+    public boolean isReversed = true;
 
     MenuItem bt_bookmark;
     Menu menu;
@@ -160,8 +161,13 @@ public class MangaDetailActivity extends AppCompatActivity {
 
 
     }
+
     public void bt_Last(MenuItem item) {
-        try {
+        if (!isReversed) {
+            Collections.reverse(Arrays.asList(chapters));
+            isReversed = !isReversed;
+        }
+        /*try {
             Arrays.sort(chapters, new Comparator<Chapter>(){
 
                 @Override
@@ -181,13 +187,17 @@ public class MangaDetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             return;
-        }
+        }*/
         item.setChecked(true);
         mAdapter.notifyDataSetChanged();
     }
     public void bt_First(MenuItem item) {
 
-        try {
+        if (isReversed) {
+            Collections.reverse(Arrays.asList(chapters));
+            isReversed = !isReversed;
+        }
+        /*try {
             Arrays.sort(chapters, new Comparator<Chapter>(){
 
                 @Override
@@ -207,7 +217,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             return;
-        }
+        }*/
         mAdapter.notifyDataSetChanged();
         item.setChecked(true);
     }
