@@ -55,6 +55,7 @@ public class SharedPreferencesHelper {
             if (m.id.equals(manga.id)){
                 isFav = true;
                 mangas.remove(m);
+                Log.e("isFAV", "AddOrRemove: deleted new size : " + mangas.size() );
                 manga.isFav = false;  //remove manga from favs
                 break;
             }
@@ -63,6 +64,7 @@ public class SharedPreferencesHelper {
             manga.codedCover = BitmapConverter.getStringFromBitmap(manga.cover);
             mangas.add(manga);
             manga.isFav = true;
+            Log.e("isFAV", "AddOrRemove: added new size : " + mangas.size() );
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(favSharePreferenceKey, gson.toJson(mangas));

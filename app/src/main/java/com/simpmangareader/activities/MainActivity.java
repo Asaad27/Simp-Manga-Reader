@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     currentFragment = fragment_browse;
                     break;
                 case R.id.bt_library:
-                    currentFragment = fragment_library;
+                    currentFragment = new Fragment_library();
                     break;
             }
 
