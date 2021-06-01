@@ -28,9 +28,11 @@
         <TextView
             android:id="@+id/manga_text_view_listview"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="104dp"
             android:layout_gravity="center|center_horizontal"
             android:text="title"
+            android:textAlignment="center"
+            android:textColor="@color/black"
             android:textSize="20dp" />
 
 

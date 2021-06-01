@@ -15,6 +15,7 @@
         android:background="#F44336"
         android:minHeight="?attr/actionBarSize"
         app:titleTextColor="@color/white"
+        android:enabled="true"
         android:outlineAmbientShadowColor="@color/purple_200"
         app:itemRippleColor="@color/yellow"
         app:itemTextColor="@color/second_nav_color"

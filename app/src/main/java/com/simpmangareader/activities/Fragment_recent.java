@@ -9,7 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import static androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
+import static com.simpmangareader.database.SharedPreferencesHelper.favPreference_file_key;
+import static com.simpmangareader.database.SharedPreferencesHelper.recPreference_file_key;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -18,21 +22,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
+import com.simpmangareader.database.SharedPreferencesHelper;
+import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
+import com.simpmangareader.util.MangaChaptersRVadapter;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class Fragment_recent extends Fragment {
 
-    private ArrayList<Manga> mData;
+    protected Chapter[] mData;
 
     protected LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
-    protected RecyclerViewAdapter mAdapter;
+    protected MangaChaptersRVadapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
@@ -52,20 +60,22 @@ public class Fragment_recent extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mData = new ArrayList<>();
-        //TODO: get data from local storage or db about the recent activities
-        //TODO: we still need to figure out how to store the history of read manga
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //loading recents
+        SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(recPreference_file_key, Objects.requireNonNull(getActivity()));
+        mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllRecs();
+        Log.e(TAG, "onCreateView: size" + mData.length );
+
 
         View rootView = inflater.inflate(R.layout.fragment_recent, container, false);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_recent_recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
-        mCurrentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER;
+        mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
 
         if (savedInstanceState != null) {
             // Restore saved layout manager type.
@@ -74,11 +84,11 @@ public class Fragment_recent extends Fragment {
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
 
-        mAdapter = new RecyclerViewAdapter(mData);
+        mAdapter = new MangaChaptersRVadapter(mData, 1);
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
 
-        DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), VERTICAL);
+        DividerItemDecoration itemDecor = new DividerItemDecoration(Objects.requireNonNull(getContext()), HORIZONTAL);
         mRecyclerView.addItemDecoration(itemDecor);
 
         this.configureOnClickRecyclerView();

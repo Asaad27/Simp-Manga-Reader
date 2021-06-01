@@ -52,15 +52,14 @@ public class Fragment_library extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mData = new ArrayList<>();
-        //TODO: get data from local storage or db
-        //TODO: we still need to figure out how to store the data locally
-
 
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //LOADING FAVs fro preferences
+
         SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(favPreference_file_key, Objects.requireNonNull(getActivity()));
         mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllFavs();
         Log.e(TAG, "onCreateView: size" + mData.size() );
