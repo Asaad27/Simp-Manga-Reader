@@ -82,6 +82,9 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
             {
                 isPageLoading[pageNumber] = false;
             }
+            synchronized (viewPager) {
+                viewPager.post(()->{viewPager.setAdapter(myViewPagerAdapter);});
+            }
         }, (e, pageNumber) -> {
             synchronized (isPageLoading)
             {
@@ -157,6 +160,7 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
         public MyViewPagerAdapter() {
         }
 
+        @NonNull
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
 
