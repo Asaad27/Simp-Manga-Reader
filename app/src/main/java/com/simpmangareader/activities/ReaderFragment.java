@@ -24,6 +24,7 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.simpmangareader.R;
 import com.simpmangareader.provider.data.Chapter;
+import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
 
 public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBarChangeListener{
@@ -135,6 +136,12 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Mangadex.CancelPagesLoading();
     }
 
     //may use this method to load the next bitmap directly instead of waiting for the thread to randomly do it

@@ -26,9 +26,6 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 public class MainActivity extends AppCompatActivity {
-    static final int THREAD_POOL_NBR = 16;
-    //create a thread pool
-    public static ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_NBR);
 
     private BottomNavigationView bottomNavigationView;
 
@@ -39,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Mangadex.init(this.getApplicationContext(), executorService);
+        Mangadex.init();
         setContentView(R.layout.activity_main);
         SetPermissions();
 
