@@ -1,33 +1,26 @@
 package com.simpmangareader.activities;
 
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.os.Looper;
+import android.text.Html;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.os.Looper;
-import android.text.Html;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.simpmangareader.R;
-import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
 import com.simpmangareader.database.SharedPreferencesHelper;
 import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
@@ -36,7 +29,6 @@ import com.simpmangareader.util.BitmapConverter;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.MangaChaptersRVadapter;
-
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 import static com.simpmangareader.database.SharedPreferencesHelper.favPreference_file_key;
@@ -91,6 +83,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         categoryText.append((Html.fromHtml("<em> " + manga.publicationDemographic + " </em>")));
         statusText.append((Html.fromHtml("<em> " + (manga.status)+ "</em>")));
         descriptionText.append((Html.fromHtml("<em> " +manga.description+ "</em>")));
+        descriptionText.setMovementMethod(new ScrollingMovementMethod());
 
         //TODO : change bookmark_button icon onclick
         /*bottomNavigationView = findViewById(R.id.second_toolbar_manga_detail);

@@ -2,8 +2,8 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="First"
-        app:showAsAction="ifRoom"/>
     <item android:title="Last"
+        app:showAsAction="ifRoom"/>
+    <item android:title="First"
         app:showAsAction="ifRoom"/>
 </menu>
