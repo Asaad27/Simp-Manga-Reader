@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.simpmangareader.util.BitmapConverter;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,7 @@ public class Manga implements Parcelable {
     public Bitmap cover;
     public String status;
     public String publicationDemographic;
-    public boolean isFav = false;
+    public Boolean isFav = false;
     public String codedCover;
 
     public Manga()
@@ -29,6 +31,8 @@ public class Manga implements Parcelable {
         cover = in.readParcelable(Bitmap.class.getClassLoader());
         status = in.readString();
         publicationDemographic = in.readString();
+        //codedCover = in.readString();
+        isFav = in.readBoolean();
     }
 
     public static final Creator<Manga> CREATOR = new Creator<Manga>() {
@@ -54,7 +58,9 @@ public class Manga implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeParcelable(cover, flags);
+        //dest.writeString(codedCover);
         dest.writeString(status);
         dest.writeString(publicationDemographic);
+        dest.writeBoolean(isFav);
     }
 }

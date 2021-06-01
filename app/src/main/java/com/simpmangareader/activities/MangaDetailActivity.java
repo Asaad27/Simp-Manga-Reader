@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Looper;
@@ -68,6 +69,7 @@ public class MangaDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        System.out.println("created");
         setContentView(R.layout.activity_manga_detail);
         //TODO: maybe adjust the layout and change font sizes so that the texts are visible
         coverImage = findViewById(R.id.imageView);
@@ -76,9 +78,8 @@ public class MangaDetailActivity extends AppCompatActivity {
         statusText = findViewById(R.id.manga_detail_status_tv);
         descriptionText = findViewById(R.id.manga_detail_description_tv);
 
-        //get data from previous activity
-        manga =  this.getIntent().getExtras().getParcelable("mangas");
 
+        manga = this.getIntent().getExtras().getParcelable("mangas");
         coverImage.setImageBitmap(manga.cover);
         titleText.setText(Html.fromHtml( "<b>" + manga.title +"</b>"));
         categoryText.append((Html.fromHtml("<em> " + manga.publicationDemographic + " </em>")));

@@ -22,6 +22,7 @@ public class SharedPreferencesHelper {
     private final String favSharePreferenceKey = "favorite_manga";
     private final String recSharePreferenceKey = "recent_chapters";
     private final Gson gson = new Gson();
+    public static ArrayList<Manga> favs;
 
 
     //observer design pattern
@@ -123,6 +124,12 @@ public class SharedPreferencesHelper {
             }.getType());
 
         }
+        //fix bitmap loading issue
+        for (Manga m: mangas) {
+            m.cover = BitmapConverter.getBitmapFromString(m.codedCover);
+        }
+        favs = mangas;
+
         return mangas;
     }
 
