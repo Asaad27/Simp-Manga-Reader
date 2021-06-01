@@ -74,7 +74,6 @@ public class MangaDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        System.out.println("created");
         setContentView(R.layout.activity_manga_detail);
         //TODO: maybe adjust the layout and change font sizes so that the texts are visible
         coverImage = findViewById(R.id.imageView);

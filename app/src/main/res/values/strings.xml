@@ -10,4 +10,5 @@
     <string name="description">Description :</string>
     <string name="status">Status :</string>
     <string name="chapter_details">chapter details</string>
+    <string name="search_hint">Search Manga by title</string>
 </resources>
