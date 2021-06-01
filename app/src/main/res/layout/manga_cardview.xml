@@ -24,14 +24,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_gravity="center|center_horizontal"
-                android:text="title"
-                android:textSize="20dp" />
+                android:text="@string/title"
+                android:textColor="@color/white"
+                android:background="@color/dimgray"
+                android:textSize="20sp"
+                android:padding="1sp"
+
+                />
 
             <ImageView
                 android:id="@+id/manga_image_view_cardview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                />
+                android:padding="1dp"
+                android:contentDescription="@string/contentdesc" />
 
 
         </LinearLayout>
