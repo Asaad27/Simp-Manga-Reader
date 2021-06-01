@@ -48,7 +48,7 @@ public class Fragment_browse extends Fragment {
     private static final int DATASET_COUNT = 60;
 
     int count = 0;
-    int currentIndex= 0, currentLimit = 1;
+    int currentIndex= 0, currentLimit = 15;
     boolean is_loading = false;
 
 
@@ -66,37 +66,48 @@ public class Fragment_browse extends Fragment {
         initRecyclerView(rootView, savedInstanceState);
 
 
-
-        //TODO: the data will not be immediately available, we need to display something until the data is ready...
         if (mData.size() == 0) {
-            //fetch data only if there are no manga, unless it's for reloading
-            Mangadex.FetchManga(currentIndex, currentLimit, result -> {
-                //NOTE(Mouad): result is an array of Manga
-                //UI UPDATED
-                synchronized (mData) {
-                    mData.addAll(Arrays.asList(result));
-                }
-                synchronized (mAdapter) {
-                    mAdapter.notifyDataSetChanged();
-                }
-                synchronized (mRecyclerView) {
-                    mRecyclerView.notifyAll();
-                }
-
-                currentIndex = currentLimit + 1;
-                currentLimit = currentIndex + 10;
-
-            }, e -> {
-                //TODO: report failure
-            }, myHandler);
+            FetchMoreManga();
         }
         return rootView;
     }
 
+    private void FetchMoreManga()
+    {
+        if (!is_loading) {
+            is_loading = true;
+            mData.add(null);
+            mAdapter.notifyItemInserted(mData.size() - 1);
+        }
+        else{
+            // it's a retry fetch
+        }
+        Mangadex.FetchManga(currentIndex, currentLimit, result -> {
+            //NOTE(Mouad): result is an array of Manga
+            //UI UPDATED
+            synchronized (mData) {
+                mData.remove(mData.size() - 1);
+            }
+            synchronized (mData) {
+                mData.addAll(Arrays.asList(result));
+            }
+            synchronized (mAdapter) {
+                mAdapter.notifyDataSetChanged();
+            }
+            is_loading = false;
+            currentIndex += currentLimit;
+        }, e -> {
+            //TODO: report failure
+            //retry again
+            FetchMoreManga();
+        }, myHandler);
+    }
 
 
     public void initRecyclerView(View rootView, Bundle savedInstanceState){
+        //get recycler view from resource
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_browse_recycler_view);
+        //initialize layout manager
         mLayoutManager = new LinearLayoutManager(getActivity());
         mCurrentLayoutManagerType = Fragment_browse.LayoutManagerType.GRID_LAYOUT_MANAGER;
         if (savedInstanceState != null) {
@@ -105,15 +116,17 @@ public class Fragment_browse extends Fragment {
                     .getSerializable(KEY_LAYOUT_MANAGER);
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
+        //configure adapter
         mAdapter = new RecyclerViewAdapter(mData);
         mRecyclerView.setAdapter(mAdapter);
+        //configure item decoration
         DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(), VERTICAL);
         mRecyclerView.addItemDecoration(itemDecor);
+        //configure scroll listener
+        initScrollListener();
 
         this.configureOnClickRecyclerView();
         this.configureOnLongClickRecyclerView();
-
-
     }
 
     /**
@@ -141,7 +154,14 @@ public class Fragment_browse extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.scrollToPosition(scrollPosition);
 
+    }
+
+    private void initScrollListener() {
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
@@ -150,42 +170,15 @@ public class Fragment_browse extends Fragment {
 
                 GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
                 assert layoutManager != null;
+
                 int lastItem = layoutManager.findLastCompletelyVisibleItemPosition();
-                int currentTotalCount = layoutManager.getItemCount();
+                //int currentTotalCount = layoutManager.getItemCount();
+                int currentTotalCount = mData.size();
 
 
-                if (currentTotalCount <= lastItem + visibleThreshold && !is_loading) {
-                    is_loading = true;
-
-                    System.out.println("LOADING MORE from " + currentIndex + "to " + currentLimit);
-                    Mangadex.FetchManga(currentIndex, currentLimit, result -> {
-                        //NOTE(Mouad): result is an array of Manga
-                        //UI UPDATED
-                        synchronized (mData) {
-                            for(int i = 0; i <= 10; ++i)
-                                mData.add(result[i]);
-
-                        }
-                        synchronized (mAdapter) {
-                            mAdapter.notifyDataSetChanged();
-                        }
-                        synchronized (mRecyclerView) {
-                            mRecyclerView.notifyAll();
-                        }
-
-
-                        System.out.println("size : " + mData.size());
-                        System.out.printf("currLimint : " + currentLimit);
-                        is_loading = false;
-                        currentIndex = currentLimit + 1;
-                        currentLimit = currentIndex + 10;
-
-
-                    }, e -> {
-                        //TODO: report failure
-                    }, myHandler);
-
-
+                if (!is_loading && currentTotalCount <= lastItem + visibleThreshold )
+                {
+                    FetchMoreManga();
                 }
             }
         });
@@ -209,7 +202,8 @@ public class Fragment_browse extends Fragment {
                     //passing args and starting chapter detail activity
                     Intent intent = new Intent(getContext(), MangaDetailActivity.class);
                     Bundle bundle = new Bundle();
-                    synchronized (mData.get(position)) {
+                    synchronized (mData) {
+                        if (mData.get(position) == null) return;
                         bundle.putParcelable("mangas", mData.get(position));
                     }
                     intent.putExtras(bundle);
