@@ -1,23 +1,20 @@
 package com.simpmangareader.util;
 
 import android.graphics.Bitmap;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
-import com.simpmangareader.database.SharedPreferencesHelper;
 import com.simpmangareader.provider.data.Chapter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static android.content.ContentValues.TAG;
 
@@ -49,6 +46,10 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
         return new MangaChapterViewHolder(view, recent);
     }
 
+    public Spanned htmlFonts(String s, String tag, String closingTag){
+        Spanned res = Html.fromHtml( tag + s +closingTag);
+        return res;
+    }
     @Override
     public void onBindViewHolder(@NonNull MangaChapterViewHolder holder, int position) {
         if (chapters[position] == null) {
@@ -56,7 +57,7 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
             return;
         }
         String title = chapters[position].MangaTitle;
-        String detail = (title != null ? title : "") +  "Chapter : " + chapters[position].chapterNumber + " " +  chapters[position].title ;
+        String detail =  (title != null ? htmlFonts(title, "<b>", "</b>") + "\n" : "") +  htmlFonts("Chapter : ", "<b>", "</b>") + chapters[position].chapterNumber  + "\n" + chapters[position].title ;
         holder.getChapter_detail().setText(detail);
 
         if(recent == 1) {

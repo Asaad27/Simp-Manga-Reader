@@ -1,6 +1,7 @@
 package com.simpmangareader.util;
 
 import android.os.Looper;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +92,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }, HandlerCompat.createAsync(Looper.getMainLooper()));
             }
         }
-        holder.getTv_manga_title().setText(mData.get(position).title);
+        holder.getTv_manga_title().setText(Html.fromHtml( "<b>"+mData.get(position).title+"</b>"));
     }
 
     @Override
