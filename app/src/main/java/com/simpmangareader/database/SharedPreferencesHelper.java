@@ -18,10 +18,11 @@ public class SharedPreferencesHelper {
     private static SharedPreferencesHelper sharedPreferencesHelper;
 
     public static String favPreference_file_key = "simpmangareader.favPreference_file_key" ;
-    static String recPreference_file_key = "simpmangareader.recPreference_file_key" ;
+    public static String recPreference_file_key = "simpmangareader.recPreference_file_key" ;
     private final String favSharePreferenceKey = "favorite_manga";
     private final String recSharePreferenceKey = "recent_chapters";
     private final Gson gson = new Gson();
+    private final int maxRecentSize = 5;
     public static ArrayList<Manga> favs;
 
 
@@ -38,6 +39,7 @@ public class SharedPreferencesHelper {
         return sharedPreferencesHelper;
     }
 
+    //choose between recent and bookmarks saved datas
     public void setSharedPreferencesHelper(String key, Context context){
         sharedPreferences = context.getSharedPreferences(key, Context.MODE_PRIVATE);
     }
@@ -76,14 +78,20 @@ public class SharedPreferencesHelper {
         for (Chapter c : chapters){
             if (c.id.equals(chapter.id)){
                 isRec = true;
-                chapters.remove(c);
                 break;
             }
         }
-        if (!isRec)
-            chapters.add(chapter);
+        if (!isRec) {
+                chapters.add(0, chapter);
+            Log.e("SpHelper chapter : ", "AddOrRemove: chapter added, size is " + chapters.size() );
+                if(chapters.size() > maxRecentSize)
+                    chapters.remove(chapters.size() - 1);
+        }
+        else{
+            Log.e("SpHelper chapter : ", "AddOrRemove: chapter already recent, size is " + chapters.size() );
+        }
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(favSharePreferenceKey, gson.toJson(chapters));
+        editor.putString(recSharePreferenceKey, gson.toJson(chapters));
         editor.apply();
     }
 
@@ -133,7 +141,7 @@ public class SharedPreferencesHelper {
         return mangas;
     }
 
-    public ArrayList<Chapter> getAllRecs() {
+    public Chapter[] getAllRecs() {
 
         String json = sharedPreferences.getString(recSharePreferenceKey, "");
         ArrayList<Chapter> chapters = new ArrayList<>();
@@ -142,7 +150,14 @@ public class SharedPreferencesHelper {
             }.getType());
 
         }
-        return chapters;
+
+        Log.e("Sph", "getAllRecs: arraylist of size " + chapters.size() );
+        Chapter[] resChapters = new Chapter[chapters.size()];
+        for (int i = 0; i < chapters.size(); i++)
+            resChapters[i] = chapters.get(i);
+
+        Log.e("Sph", "getAllRecs: resCHapter " + resChapters.length );
+        return resChapters;
     }
 
 }

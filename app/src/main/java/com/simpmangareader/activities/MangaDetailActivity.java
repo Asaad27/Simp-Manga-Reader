@@ -32,6 +32,7 @@ import com.simpmangareader.database.SharedPreferencesHelper;
 import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
+import com.simpmangareader.util.BitmapConverter;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.MangaChaptersRVadapter;
@@ -136,7 +137,7 @@ public class MangaDetailActivity extends AppCompatActivity {
                     .getSerializable(KEY_LAYOUT_MANAGER);
         }
         setRecyclerViewLayoutManager(mCurrentLayoutManagerType);
-        mAdapter = new MangaChaptersRVadapter(chapters);
+        mAdapter = new MangaChaptersRVadapter(chapters, 0);
         mRecyclerView.setAdapter(mAdapter);
         DividerItemDecoration itemDecor = new DividerItemDecoration(this, VERTICAL);
         mRecyclerView.addItemDecoration(itemDecor);
@@ -151,7 +152,10 @@ public class MangaDetailActivity extends AppCompatActivity {
         super.onBackPressed(); // or super.finish();
     }
     public void bt_bookmark(MenuItem item) {
-           SharedPreferencesHelper.getInstance(getApplicationContext()).AddOrRemove(manga);
+
+           SharedPreferencesHelper spHelper = SharedPreferencesHelper.getInstance(getApplicationContext());
+           spHelper.setSharedPreferencesHelper("simpmangareader.recPreference_file_key", getApplicationContext());
+           spHelper.AddOrRemove(manga);
            isPressedFav = !isPressedFav;
            item.setChecked(isPressedFav);
 
@@ -164,7 +168,19 @@ public class MangaDetailActivity extends AppCompatActivity {
         ItemClickSupport.addTo(mRecyclerView, R.layout.manga_detail_chapters)
                 .setOnItemClickListener((recyclerView, position, v) -> {
                     Log.e("TAG", "Position : "+position);
-                    Toast.makeText(getBaseContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getBaseContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+
+                    /*we save the chapter as recent
+                    and add cover and title of the manga to Chapter*/
+
+                    //first we change the shared preference data
+                    SharedPreferencesHelper spHelper = SharedPreferencesHelper.getInstance(getApplicationContext());
+                    spHelper.setSharedPreferencesHelper("simpmangareader.recPreference_file_key", getApplicationContext());
+                    //we add root manga cover and title to chapter
+                    chapters[position].MangaTitle = manga.title;
+                    chapters[position].CoverBitmapEncoded = BitmapConverter.getStringFromBitmap(manga.cover);
+                    Log.e("MangaDetailActivity", "configureOnClickRecyclerView: chapter ID "+ chapters[position].id );
+                    spHelper.AddOrRemove(chapters[position]);
                     startFragment(chapters[position]);
                 });
     }

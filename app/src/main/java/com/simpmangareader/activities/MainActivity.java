@@ -102,10 +102,9 @@ public class MainActivity extends AppCompatActivity {
 
             switch (item.getItemId()){
                 case R.id.bt_recent:
-                    currentFragment = fragment_recent;
+                    currentFragment = new Fragment_recent();
                     break;
                 case R.id.bt_browse:
-
                     currentFragment = fragment_browse;
                     break;
                 case R.id.bt_library:
