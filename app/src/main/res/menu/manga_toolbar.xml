@@ -3,7 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="Last"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:onClick="bt_Last"
+        />
     <item android:title="First"
+        android:onClick="bt_First"
         app:showAsAction="ifRoom"/>
 </menu>

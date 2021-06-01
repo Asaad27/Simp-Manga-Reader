@@ -30,6 +30,10 @@ import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.MangaChaptersRVadapter;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 import static com.simpmangareader.database.SharedPreferencesHelper.favPreference_file_key;
 
@@ -156,6 +160,48 @@ public class MangaDetailActivity extends AppCompatActivity {
 
 
     }
+    public void bt_Last(MenuItem item) {
+        Arrays.sort(chapters, new Comparator<Chapter>(){
+
+            @Override
+            public int compare(Chapter o1, Chapter o2) {
+                int res = -1;
+                try {
+                    res = (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
+                }
+                catch (Exception e){
+                    Log.e(TAG, "compare: exception " + e );
+                    return -1;
+                }
+                return (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+        item.setChecked(true);
+
+    }
+    public void bt_First(MenuItem item) {
+        Arrays.sort(chapters, new Comparator<Chapter>(){
+
+            @Override
+            public int compare(Chapter o1, Chapter o2) {
+                int res = -1;
+                try {
+                    res = (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
+                }
+                catch (Exception e){
+                    Log.e(TAG, "compare: exception " + e );
+                    return 1;
+                }
+
+                return (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
+            }
+        });
+        mAdapter.notifyDataSetChanged();
+        item.setChecked(true);
+    }
+
+
 
 
     private void configureOnClickRecyclerView()

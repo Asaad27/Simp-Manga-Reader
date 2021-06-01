@@ -131,7 +131,7 @@ public class Fragment_library extends Fragment {
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
                 .setOnItemClickListener((recyclerView, position, v) ->{
-                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
                     Intent intent = new Intent(getContext(), MangaDetailActivity.class);
                     Bundle bundle = new Bundle();

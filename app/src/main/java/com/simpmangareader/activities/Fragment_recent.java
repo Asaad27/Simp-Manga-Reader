@@ -140,7 +140,7 @@ public class Fragment_recent extends Fragment {
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
                 .setOnItemClickListener((recyclerView, position, v) -> {
-                    Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                   // Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
                     //passing args and starting chapter detail activity
                     Intent intent = new Intent(getContext(), MainActivity.class);
