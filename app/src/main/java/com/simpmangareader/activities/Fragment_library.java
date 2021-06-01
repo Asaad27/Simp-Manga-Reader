@@ -52,15 +52,14 @@ public class Fragment_library extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mData = new ArrayList<>();
-        //TODO: get data from local storage or db
-        //TODO: we still need to figure out how to store the data locally
-
 
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //LOADING FAVs fro preferences
+
         SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(favPreference_file_key, Objects.requireNonNull(getActivity()));
         mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllFavs();
         Log.e(TAG, "onCreateView: size" + mData.size() );
@@ -138,11 +137,21 @@ public class Fragment_library extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("mangas", mData.get(position));
                     intent.putExtras(bundle);
-                    startActivity(intent);
+                    startActivityForResult(intent, 0);
                 });
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mAdapter.notifyDataSetChanged();
+        Log.e(TAG, "onActivityResult: frag lib" );
+        synchronized (mRecyclerView) {
+            mRecyclerView.notifyAll();
+        }
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
