@@ -2,23 +2,29 @@ package com.simpmangareader.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.os.HandlerCompat;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.simpmangareader.R;
 import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
+import com.simpmangareader.database.SharedPreferencesHelper;
 import com.simpmangareader.provider.data.Chapter;
 import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
@@ -43,9 +49,12 @@ public class MangaDetailActivity extends AppCompatActivity {
     private TextView categoryText;
     private TextView statusText;
     private TextView descriptionText;
+
+    BottomNavigationItemView item;
     Manga manga;
     Chapter[] chapters;
 
+    boolean isPressedFav = false;
 
 
 
@@ -55,6 +64,7 @@ public class MangaDetailActivity extends AppCompatActivity {
     }
 
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +84,9 @@ public class MangaDetailActivity extends AppCompatActivity {
         categoryText.append((Html.fromHtml("<em> " + manga.publicationDemographic + " </em>")));
         statusText.append((Html.fromHtml("<em> " + (manga.status)+ "</em>")));
         descriptionText.append((Html.fromHtml("<em> " +manga.description+ "</em>")));
+
+        //TODO : add button bookmarks two color design, so that we can know if a manga is in favs
+
 
         Mangadex.FetchAllMangaEnglishChapter(manga.id,
                 (result, offset, totalSize) -> {
@@ -126,11 +139,18 @@ public class MangaDetailActivity extends AppCompatActivity {
         Mangadex.CancelChapterLoading();
     }
 
+
+
     //toolbar back button onclick
     public void bt_back(MenuItem item) {
         super.onBackPressed(); // or super.finish();
     }
+    public void bt_bookmark(MenuItem item) {
+       isPressedFav = !isPressedFav;
+       if (isPressedFav)
+                SharedPreferencesHelper.getInstance(getApplicationContext()).AddOrRemove(manga);
 
+    }
 
 
     private void configureOnClickRecyclerView()

@@ -15,7 +15,8 @@ public class Manga implements Parcelable {
     public Bitmap cover;
     public String status;
     public String publicationDemographic;
-
+    public boolean isFav = false;
+    public String codedCover;
 
     public Manga()
     {
