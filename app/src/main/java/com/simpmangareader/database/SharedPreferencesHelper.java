@@ -26,7 +26,7 @@ public class SharedPreferencesHelper {
     public static ArrayList<Manga> favs;
 
 
-    //observer design pattern
+    //Singleton design pattern
     private SharedPreferencesHelper(){
     }
 

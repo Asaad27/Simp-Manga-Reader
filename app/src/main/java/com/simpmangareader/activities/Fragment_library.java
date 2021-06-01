@@ -137,17 +137,20 @@ public class Fragment_library extends Fragment {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("mangas", mData.get(position));
                     intent.putExtras(bundle);
-                    startActivity(intent);
+                    startActivityForResult(intent, 0);
                 });
 
     }
 
-    //update lib bookmarked items
     @Override
-    public void onResume() {
-        super.onResume();
-        Log.e("lib", "onResume: " );
-
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mAdapter.notifyDataSetChanged();
+        Log.e(TAG, "onActivityResult: frag lib" );
+        synchronized (mRecyclerView) {
+            mRecyclerView.notifyAll();
+        }
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
     }
 
     @Override

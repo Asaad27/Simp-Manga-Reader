@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener =
         item -> {
 
-
             switch (item.getItemId()){
                 case R.id.bt_recent:
                     currentFragment = new Fragment_recent();
