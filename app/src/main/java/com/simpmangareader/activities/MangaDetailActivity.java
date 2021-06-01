@@ -76,7 +76,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: MangaDetailActivity");
         setContentView(R.layout.activity_manga_detail);
-        //TODO: maybe adjust the layout and change font sizes so that the texts are visible
+
         coverImage = findViewById(R.id.imageView);
         titleText = findViewById(R.id.manga_detail_title_tv);
         categoryText = findViewById(R.id.manga_category_title_tv);
