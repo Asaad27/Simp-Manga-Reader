@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 public class MainActivity extends AppCompatActivity {
-
+    //TODO : fix UI stopped when first installed, conflict bewteen the permission asking dialog and the thread ig
     private BottomNavigationView bottomNavigationView;
 
     private final Fragment_browse fragment_browse = new Fragment_browse();

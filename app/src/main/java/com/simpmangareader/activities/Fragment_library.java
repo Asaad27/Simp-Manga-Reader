@@ -15,14 +15,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
+import com.simpmangareader.database.SharedPreferencesHelper;
 import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
+import static com.simpmangareader.database.SharedPreferencesHelper.favPreference_file_key;
 
 public class Fragment_library extends Fragment {
 
@@ -49,11 +53,16 @@ public class Fragment_library extends Fragment {
         mData = new ArrayList<>();
         //TODO: get data from local storage or db
         //TODO: we still need to figure out how to store the data locally
+
+
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(favPreference_file_key, Objects.requireNonNull(getActivity()));
+        mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllFavs();
+        Log.e(TAG, "onCreateView: size" + mData.size() );
 
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
 

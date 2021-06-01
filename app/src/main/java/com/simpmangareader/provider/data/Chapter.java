@@ -14,6 +14,7 @@ public class Chapter implements Serializable {
 	public String title;
 	public String hash;
 	public String[] data;
+	public String CoverBitmapEncoded;
 
 
 	public int getPageCount(){return data.length;}

@@ -1,6 +1,8 @@
 package com.simpmangareader.util;
 
+import android.graphics.Bitmap;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,8 @@ import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
 
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>  {
@@ -41,8 +45,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         Manga manga = mData.get(position);
         ImageView img = holder.getImg_book_thumbnail();
-        if (manga.cover != null)
-        {
+        if (manga.isFav && manga.codedCover != null){
+            Log.e(TAG, "onBindViewHolder: mangaisFav and codedCover non null" );
+            Bitmap bitmap = BitmapConverter.getBitmapFromString(manga.codedCover);
+            img.setImageBitmap(bitmap);
+        }
+        else if (manga.cover != null) {
             img.setImageBitmap(manga.cover);
         }
         else {
