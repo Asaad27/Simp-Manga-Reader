@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.text.Html;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.simpmangareader.R;
 import com.simpmangareader.callbacks.NetworkMangaChaptersSucceed;
 import com.simpmangareader.database.SharedPreferencesHelper;
@@ -51,12 +54,14 @@ public class MangaDetailActivity extends AppCompatActivity {
     private TextView statusText;
     private TextView descriptionText;
 
+    MenuItem bt_bookmark;
+    Menu menu;
     BottomNavigationItemView item;
     Manga manga;
     Chapter[] chapters;
 
     boolean isPressedFav = false;
-
+    private BottomNavigationView bottomNavigationView;
 
 
     public enum LayoutManagerType {
@@ -78,7 +83,6 @@ public class MangaDetailActivity extends AppCompatActivity {
         statusText = findViewById(R.id.manga_detail_status_tv);
         descriptionText = findViewById(R.id.manga_detail_description_tv);
 
-
         manga = this.getIntent().getExtras().getParcelable("mangas");
         coverImage.setImageBitmap(manga.cover);
         titleText.setText(Html.fromHtml( "<b>" + manga.title +"</b>"));
@@ -86,8 +90,15 @@ public class MangaDetailActivity extends AppCompatActivity {
         statusText.append((Html.fromHtml("<em> " + (manga.status)+ "</em>")));
         descriptionText.append((Html.fromHtml("<em> " +manga.description+ "</em>")));
 
-        //TODO : add button bookmarks two color design, so that we can know if a manga is in favs
+        //TODO : change bookmark_button icon onclick
+        /*bottomNavigationView = findViewById(R.id.second_toolbar_manga_detail);
+        menu = bottomNavigationView.getMenu();
+        System.out.println("mangaisfav : " + manga.isFav);
+        menu.findItem(R.id.bt_bookmark).setCheckable(true);
+        menu.findItem(R.id.bt_bookmark).setEnabled(true);
+        menu.findItem(R.id.bt_bookmark).setChecked(manga.isFav);*/
 
+        isPressedFav = manga.isFav;
 
         Mangadex.FetchAllMangaEnglishChapter(manga.id,
                 (result, offset, totalSize) -> {
@@ -134,6 +145,7 @@ public class MangaDetailActivity extends AppCompatActivity {
 
     }
 
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -147,9 +159,10 @@ public class MangaDetailActivity extends AppCompatActivity {
         super.onBackPressed(); // or super.finish();
     }
     public void bt_bookmark(MenuItem item) {
-       isPressedFav = !isPressedFav;
-       if (isPressedFav)
-                SharedPreferencesHelper.getInstance(getApplicationContext()).AddOrRemove(manga);
+           SharedPreferencesHelper.getInstance(getApplicationContext()).AddOrRemove(manga);
+           isPressedFav = !isPressedFav;
+           item.setChecked(isPressedFav);
+
 
     }
 

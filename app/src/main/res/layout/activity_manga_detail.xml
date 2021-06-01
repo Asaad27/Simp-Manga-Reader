@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/second_toolbar"
+        android:id="@+id/second_toolbar_manga_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#F44336"
@@ -17,6 +17,8 @@
         app:titleTextColor="@color/white"
         android:outlineAmbientShadowColor="@color/purple_200"
         app:itemRippleColor="@color/yellow"
+        app:itemTextColor="@color/second_nav_color"
+        app:itemIconTint="@color/second_nav_color"
         app:menu="@menu/chapter_detail_toolbar"/>
 
     <LinearLayout
