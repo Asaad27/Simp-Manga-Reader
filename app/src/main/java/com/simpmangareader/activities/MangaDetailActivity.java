@@ -120,8 +120,13 @@ public class MangaDetailActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Mangadex.CancelChapterLoading();
+    }
 
-//toolbar back button onclick
+    //toolbar back button onclick
     public void bt_back(MenuItem item) {
         super.onBackPressed(); // or super.finish();
     }
