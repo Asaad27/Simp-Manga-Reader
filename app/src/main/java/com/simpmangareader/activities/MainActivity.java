@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.simpmangareader.R;
@@ -26,8 +27,9 @@ import java.util.Objects;
 import java.util.concurrent.*;
 
 public class MainActivity extends AppCompatActivity {
-    //TODO : fix UI stopped when first installed, conflict bewteen the permission asking dialog and the thread ig
+
     private BottomNavigationView bottomNavigationView;
+    private Toolbar main_toolbar;
 
     private final Fragment_browse fragment_browse = new Fragment_browse();
     private final Fragment_recent fragment_recent = new Fragment_recent();
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         SetPermissions();
 
-        Toolbar main_toolbar = findViewById(R.id.toolbar);
+        main_toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(main_toolbar);   //make the toolbar act like an actionbar
         try                                  //remove app name from toolbar
         {
@@ -51,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
+
+        main_toolbar.setOnMenuItemClickListener(clickListener);
         //Allocate cache for Network
         try {
             File httpCacheDir = new File(this.getApplicationContext().getCacheDir(), "http");
@@ -80,6 +84,17 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    private final Toolbar.OnMenuItemClickListener clickListener = item -> {
+        if (item.getItemId() == R.id.toolbar_search_btn) {
+            Log.e("mainActivity", "search button clicked ");
+        }
+
+        else{
+            Log.e("mainActivity", "no item id found");
+        }
+        return true;
+    };
+
     //make navigationbar clickable, navigation between fragments
     private final BottomNavigationView.OnNavigationItemSelectedListener navListener =
         item -> {
@@ -90,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     currentFragment = fragment_recent;
                     break;
                 case R.id.bt_browse:
+
                     currentFragment = fragment_browse;
                     break;
                 case R.id.bt_library:
