@@ -142,6 +142,13 @@ public class Fragment_library extends Fragment {
 
     }
 
+    //update lib bookmarked items
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("lib", "onResume: " );
+
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {

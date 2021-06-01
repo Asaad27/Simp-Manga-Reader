@@ -39,6 +39,7 @@ import com.simpmangareader.util.MangaChaptersRVadapter;
 
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
+import static com.simpmangareader.database.SharedPreferencesHelper.favPreference_file_key;
 
 public class MangaDetailActivity extends AppCompatActivity {
 
@@ -153,8 +154,9 @@ public class MangaDetailActivity extends AppCompatActivity {
     }
     public void bt_bookmark(MenuItem item) {
 
+
            SharedPreferencesHelper spHelper = SharedPreferencesHelper.getInstance(getApplicationContext());
-           spHelper.setSharedPreferencesHelper("simpmangareader.recPreference_file_key", getApplicationContext());
+           spHelper.setSharedPreferencesHelper(favPreference_file_key, getApplicationContext());
            spHelper.AddOrRemove(manga);
            isPressedFav = !isPressedFav;
            item.setChecked(isPressedFav);
