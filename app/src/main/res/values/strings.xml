@@ -4,6 +4,7 @@
     <string name="library">Library</string>
     <string name="recent">Recent</string>
     <string name="artist">Artist :</string>
+    <string name="search_hint">Search Manga by title</string>
     <string name="category">Category : </string>
     <string name="author">Author : </string>
     <string name="title">Title : </string>
