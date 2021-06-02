@@ -37,6 +37,11 @@ import javax.net.ssl.HttpsURLConnection;
  * */
 public class Mangadex
 {
+	//TODO(Mouad): optimize bitmap usage
+	//TODO(Mouad): resources to help : https://developer.android.com/topic/performance/graphics/load-bitmap
+	//TODO(Mouad): resources to help : https://developer.android.com/topic/performance/graphics/cache-bitmap
+	//TODO(Mouad): resources to help : https://developer.android.com/topic/performance/graphics/manage-memory
+
 	public static final String baseURL = "https://api.mangadex.org";
 	static final int THREAD_POOL_MANGA_NBR = 4;
 	static final int THREAD_POOL_CHAPTER_NBR = 4;
