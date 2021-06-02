@@ -75,7 +75,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         else {
             //clear the image view and wait for the data to arrive from the API
-
             if (!holder.isCoverLoading) {
                 holder.isCoverLoading = true;
                 img.setImageBitmap(null);

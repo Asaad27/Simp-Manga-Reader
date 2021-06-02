@@ -9,7 +9,7 @@
     <item
         android:id="@+id/bt_bookmark"
         android:visible="true"
-        android:icon="@drawable/outline_favorite_white_20"
+        android:icon="@drawable/bookmarkicon0"
         android:title="bookmark"
         android:onClick="bt_bookmark"/>
 

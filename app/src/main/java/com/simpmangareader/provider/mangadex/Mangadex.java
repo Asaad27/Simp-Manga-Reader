@@ -74,6 +74,39 @@ public class Mangadex
 		});
 	}
 
+	static public void FetchMangaLatestAsc(int offset, int limit,
+								  final NetworkAllMangaFetchSucceed successCallback,
+								  final NetworkFailed failedCallback,
+								  final Handler handler)
+	{
+		if (limit <= 0) limit = 1;
+		else if (limit > 100) limit = 100;
+		if (offset < 0) offset = 0;
+
+		int finalOffset = offset;
+		int finalLimit = limit;
+		mangaExecutor.execute(() -> {
+			String reqURL = baseURL + "/manga?offset="+ finalOffset +"&limit="+ finalLimit+"&order[updatedAt]=asc";
+			GetMangaByURL(successCallback, failedCallback, handler, reqURL);
+		});
+	}
+	static public void FetchMangaLatestDes(int offset, int limit,
+										   final NetworkAllMangaFetchSucceed successCallback,
+										   final NetworkFailed failedCallback,
+										   final Handler handler)
+	{
+		if (limit <= 0) limit = 1;
+		else if (limit > 100) limit = 100;
+		if (offset < 0) offset = 0;
+
+		int finalOffset = offset;
+		int finalLimit = limit;
+		mangaExecutor.execute(() -> {
+			String reqURL = baseURL + "/manga?offset="+ finalOffset +"&limit="+ finalLimit + "&order[updatedAt]=desc";
+			GetMangaByURL(successCallback, failedCallback, handler, reqURL);
+		});
+	}
+
 	/**
 	 * Fetch limit manga that their name matches "name" from MangaDex API starting at offset,
 	 * the fetch is done on a separate worker thread
