@@ -32,7 +32,7 @@ public class Manga implements Parcelable {
         status = in.readString();
         publicationDemographic = in.readString();
         //codedCover = in.readString();
-        isFav = in.readBoolean();
+        isFav = in.readInt() == 1;
     }
 
     public static final Creator<Manga> CREATOR = new Creator<Manga>() {
@@ -61,6 +61,6 @@ public class Manga implements Parcelable {
         //dest.writeString(codedCover);
         dest.writeString(status);
         dest.writeString(publicationDemographic);
-        dest.writeBoolean(isFav);
+        dest.writeInt(isFav? 1 : 0);
     }
 }
