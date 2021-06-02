@@ -17,6 +17,9 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".activities.MangaDetailActivity" /> <!-- removes default toolbar -->
         <activity android:name=".activities.MainActivity">
+
+        </activity>
+        <activity android:name=".activities.SplashScreen" android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
