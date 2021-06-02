@@ -2,13 +2,14 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Previous"
-        app:showAsAction="always"
-        android:onClick="bt_prev"
-        android:icon="@drawable/backarrow"
-        />
-    <item android:title="Next"
-        app:showAsAction="always"
-        android:onClick="bt_next"
+    <item
+        android:title="Previous"
+        app:showAsAction="ifRoom"
+        android:id="bt_prev"
+        android:icon="@drawable/backarrow"/>
+    <item
+        android:title="Next"
+        app:showAsAction="ifRoom"
+        android:id="bt_next"
         android:icon="@drawable/nextarrow"/>
 </menu>
