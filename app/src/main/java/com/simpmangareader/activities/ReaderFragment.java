@@ -1,18 +1,10 @@
 package com.simpmangareader.activities;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.os.HandlerCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +12,17 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.os.HandlerCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.simpmangareader.R;
 import com.simpmangareader.provider.data.Chapter;
-import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.provider.mangadex.Mangadex;
 
 import java.util.Arrays;
@@ -134,7 +132,7 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
 
     private void displayMetaInfo(int position) {
         lblCount.setText((position + 1) + " of " + chapter.getPageCount());
-        lblTitle.setText(chapter.title);
+        lblTitle.setText(chapter.title + " " +chapter.chapterNumber);
     }
 
     @Override
