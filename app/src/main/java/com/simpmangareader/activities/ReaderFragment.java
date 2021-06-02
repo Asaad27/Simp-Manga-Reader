@@ -194,7 +194,6 @@ public class ReaderFragment extends DialogFragment  implements SeekBar.OnSeekBar
                             isPageLoading[position] = false;
                         }
                     }, e -> {
-                        //TODO: report failure
                         synchronized (isPageLoading)
                         {
                             isPageLoading[position] = false;

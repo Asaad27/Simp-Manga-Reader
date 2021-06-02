@@ -319,7 +319,6 @@ public class Fragment_browse extends Fragment {
                     } break;
                     case R.id.latest:
                     {
-                        // TODO: change the loading mode
                         switch(fetch_mode)
                         {
                             case FETCH_NORMAL: fetch_mode = FETCH_LATEST_ASC; break;

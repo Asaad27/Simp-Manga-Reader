@@ -87,7 +87,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                     manga.cover = cover;
                 }, e -> {
-                    //TODO: report failure
+                    //just ignore it for now
                 }, HandlerCompat.createAsync(Looper.getMainLooper()));
             }
         }

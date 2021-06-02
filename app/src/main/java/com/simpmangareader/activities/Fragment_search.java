@@ -91,7 +91,6 @@ public class Fragment_search extends Fragment {
             is_loading = false;
             currentIndex += currentLimit;
         }, e -> {
-            //TODO: report failure
             //retry again
             FetchMoreManga();
         }, myHandler);
