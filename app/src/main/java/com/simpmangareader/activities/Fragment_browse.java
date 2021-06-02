@@ -28,6 +28,7 @@ import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -48,9 +49,15 @@ public class Fragment_browse extends Fragment {
     private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
 
+    final int FETCH_NORMAL = 1;
+    final int FETCH_LATEST_ASC = 2;
+    final int FETCH_LATEST_DES = 3;
+    int fetch_mode = FETCH_NORMAL;
+
     int sortClicked = 0;
     int currentIndex= 0, currentLimit = 15;
     boolean is_loading = false;
+    boolean is_retrying = false;
     private BottomNavigationView bottomNavigationView;
 
 
@@ -82,28 +89,97 @@ public class Fragment_browse extends Fragment {
             mData.add(null);
             mAdapter.notifyItemInserted(mData.size() - 1);
         }
-        else{
-            // it's a retry fetch
+        else if (!is_retrying){
+            return;
         }
-        Mangadex.FetchManga(currentIndex, currentLimit, result -> {
-            //NOTE(Mouad): result is an array of Manga
-            //UI UPDATED
-            synchronized (mData) {
-                mData.remove(mData.size() - 1);
-            }
-            synchronized (mData) {
-                mData.addAll(Arrays.asList(result));
-            }
-            synchronized (mAdapter) {
-                mAdapter.notifyDataSetChanged();
-            }
-            is_loading = false;
-            currentIndex += currentLimit;
-        }, e -> {
-            //TODO: report failure
-            //retry again
-            FetchMoreManga();
-        }, myHandler);
+        switch(fetch_mode)
+        {
+            case FETCH_NORMAL:
+            {
+                Mangadex.FetchManga(currentIndex, currentLimit, result -> {
+                    //NOTE(Mouad): result is an array of Manga
+                    //UI UPDATED
+                    if (fetch_mode != FETCH_NORMAL)
+                    {
+                        //fetch mode changed.. this data is useless so just return
+                        return;
+                    }
+                    synchronized (mData) {
+                        mData.remove(mData.size() - 1);
+                    }
+                    synchronized (mData) {
+                        mData.addAll(Arrays.asList(result));
+                    }
+                    synchronized (mAdapter) {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    is_loading = false;
+                    is_retrying = false;
+                    currentIndex += currentLimit;
+                }, e -> {
+                    //retry again
+                    is_retrying = true;
+                    FetchMoreManga();
+                }, myHandler);
+            }; break;
+            case FETCH_LATEST_ASC:
+            {
+                Mangadex.FetchMangaLatestAsc(currentIndex, currentLimit, result -> {
+                    //NOTE(Mouad): result is an array of Manga
+                    //UI UPDATED
+                    if (fetch_mode != FETCH_LATEST_ASC)
+                    {
+                        //fetch mode changed.. this data is useless so just return
+                        return;
+                    }
+                    synchronized (mData) {
+                        mData.remove(mData.size() - 1);
+                    }
+                    synchronized (mData) {
+                        mData.addAll(Arrays.asList(result));
+                    }
+                    synchronized (mAdapter) {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    is_loading = false;
+                    is_retrying = false;
+                    currentIndex += currentLimit;
+                }, e -> {
+                    //retry again
+                    is_retrying = true;
+                    FetchMoreManga();
+                }, myHandler);
+            }; break;
+            case FETCH_LATEST_DES:
+            {
+                Mangadex.FetchMangaLatestDes(currentIndex, currentLimit, result -> {
+                    //NOTE(Mouad): result is an array of Manga
+                    //UI UPDATED
+                    if (fetch_mode != FETCH_LATEST_DES)
+                    {
+                        //fetch mode changed.. this data is useless so just return
+                        return;
+                    }
+                    synchronized (mData) {
+                        mData.remove(mData.size() - 1);
+                    }
+                    synchronized (mData) {
+                        mData.addAll(Arrays.asList(result));
+                    }
+                    synchronized (mAdapter) {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                    is_loading = false;
+                    is_retrying = false;
+                    currentIndex += currentLimit;
+                }, e -> {
+                    //retry again
+                    is_retrying = true;
+                    FetchMoreManga();
+                }, myHandler);
+            }break;
+        }
+
     }
 
 
@@ -221,19 +297,17 @@ public class Fragment_browse extends Fragment {
                 switch (item.getItemId()) {
 
                     case R.id.browse_sort:
-                        Log.e(TAG, "bt_sort_alpha: " );
-                        if(sortClicked == 0) {
+                    {
+                        Log.e(TAG, "bt_sort_alpha: ");
+                        if (sortClicked == 0) {
                             Collections.sort(mData, new Comparator<Manga>() {
-
                                 @Override
                                 public int compare(Manga o1, Manga o2) {
                                     return o1.title.compareTo(o2.title);
                                 }
                             });
-                        }
-                        else{
+                        } else {
                             Collections.sort(mData, new Comparator<Manga>() {
-
                                 @Override
                                 public int compare(Manga o1, Manga o2) {
                                     return o2.title.compareTo(o1.title);
@@ -242,13 +316,29 @@ public class Fragment_browse extends Fragment {
                         }
                         mAdapter.notifyDataSetChanged();
                         sortClicked = 1 - sortClicked;
-                        break;
+                    } break;
+                    case R.id.latest:
+                    {
+                        // TODO: change the loading mode
+                        switch(fetch_mode)
+                        {
+                            case FETCH_NORMAL: fetch_mode = FETCH_LATEST_ASC; break;
+                            case FETCH_LATEST_ASC: fetch_mode = FETCH_LATEST_DES; break;
+                            case FETCH_LATEST_DES: fetch_mode = FETCH_LATEST_ASC; break;
+                        }
+                        synchronized (mData)
+                        {
+                            mData.clear();
+                        }
+                        mAdapter.notifyDataSetChanged();
+                        is_loading = false;
+                        is_retrying = false;
+                        FetchMoreManga();
+                    } break;
 
                 }
                 return true;
-
             };
-
 
 
 

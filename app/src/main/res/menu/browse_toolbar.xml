@@ -5,7 +5,8 @@
     <item android:title="@string/Latest"
         app:showAsAction="always"
         android:visible="true"
-        android:icon="@drawable/newicon"/>
+        android:icon="@drawable/newicon"
+        android:id="@+id/latest"/>
     <item android:title="@string/Top"
         app:showAsAction="ifRoom"
         android:visible="true"
