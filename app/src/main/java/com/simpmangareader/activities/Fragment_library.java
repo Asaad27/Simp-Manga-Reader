@@ -145,12 +145,12 @@ public class Fragment_library extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(favPreference_file_key, Objects.requireNonNull(getActivity()));
+        mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllFavs();
+        mAdapter = new RecyclerViewAdapter(mData);
+        // Set CustomAdapter as the adapter for RecyclerView.
+        mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-        Log.e(TAG, "onActivityResult: frag lib" );
-        synchronized (mRecyclerView) {
-            mRecyclerView.notifyAll();
-        }
-        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
     }
 
     @Override
