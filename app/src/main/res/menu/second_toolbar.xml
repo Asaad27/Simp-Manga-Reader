@@ -2,12 +2,12 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:title="Top Rated"
+    <item android:title="Top 10"
         app:showAsAction="always"
         />
-    <item android:title="Top Top"
+    <item android:title="Top 50"
         app:showAsAction="always"/>
-    <item android:title="Untop"
+    <item android:title="Top 100"
         app:showAsAction="always"/>
 
 </menu>
