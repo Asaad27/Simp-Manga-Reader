@@ -76,7 +76,7 @@ public class Fragment_browse extends Fragment {
 
         bottomNavigationView = rootView.findViewById(R.id.browse_toolbar);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
-        bottomNavigationView.setSelectedItemId(R.id.Hotest);
+        bottomNavigationView.setSelectedItemId(R.id.normal_mode);
         if (mData.size() == 0) {
             FetchMoreManga();
         }
