@@ -162,4 +162,12 @@ public class SharedPreferencesHelper {
         return resChapters;
     }
 
+    public void removeHistory(){
+        List<Chapter> chapters = new ArrayList<>();
+        String json = sharedPreferences.getString(recSharePreferenceKey, "");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(recSharePreferenceKey, gson.toJson(chapters));
+        editor.apply();
+    }
+
 }

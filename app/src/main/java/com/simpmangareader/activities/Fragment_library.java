@@ -151,6 +151,11 @@ public class Fragment_library extends Fragment {
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
+        Log.e(TAG, "onActivityResult: frag lib" );
+        synchronized (mRecyclerView) {
+            mRecyclerView.notifyAll();
+        }
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
     }
 
     @Override
