@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/manga_card_view"
+    android:layout_width="120dp"
+    android:layout_height="200dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/border"
+    android:clickable="true"
+    android:gravity="center_vertical"
+    android:focusable="true">
+
+    <LinearLayout
+        android:layout_width="120dp"
+        android:layout_height="200dp"
+        android:orientation="vertical"
+        >
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            />
+
+    </LinearLayout>
+
+
+</FrameLayout>

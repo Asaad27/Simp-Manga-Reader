@@ -3,12 +3,17 @@
 
     <item
         android:id="@+id/bt_recent"
+        android:icon="@drawable/recenticon"
+        android:iconTint="@color/white"
         android:title="@string/recent" />
     <item
         android:id="@+id/bt_library"
+        android:icon="@drawable/libicon"
+        android:iconTint="@color/white"
         android:title="@string/library" />
     <item
         android:id="@+id/bt_browse"
+        android:icon="@drawable/browseicon"
         android:title="@string/browse" />
 
 </menu>

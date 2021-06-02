@@ -1,5 +1,6 @@
 package com.simpmangareader.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,19 +16,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.simpmangareader.R;
-import com.simpmangareader.provider.data.MangaDetail;
+import com.simpmangareader.database.SharedPreferencesHelper;
+import com.simpmangareader.provider.data.Manga;
 import com.simpmangareader.util.GridAutoFitLayoutManager;
 import com.simpmangareader.util.ItemClickSupport;
 import com.simpmangareader.util.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
+import static com.simpmangareader.database.SharedPreferencesHelper.favPreference_file_key;
 
 public class Fragment_library extends Fragment {
 
-    private List<MangaDetail> mData;
+    private ArrayList<Manga> mData;
 
     protected Fragment_library.LayoutManagerType mCurrentLayoutManagerType;
     protected RecyclerView mRecyclerView;
@@ -47,19 +51,18 @@ public class Fragment_library extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Initialize dataset, this data would usually come from a local content provider or
-        // remote server.
-        initDataset();
+        mData = new ArrayList<>();
 
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        //LOADING FAVs fro preferences
 
-
-        //initDataset();
+        SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(favPreference_file_key, Objects.requireNonNull(getActivity()));
+        mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllFavs();
+        Log.e(TAG, "onCreateView: size" + mData.size() );
 
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
 
@@ -115,52 +118,46 @@ public class Fragment_library extends Fragment {
 
     }
 
+
     private void configureOnLongClickRecyclerView() {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener()
-                {
-                    @Override
-                    public boolean onItemLongClicked(RecyclerView recyclerView, int position, View v) {
-                        Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
-
-                        return true;
-                    }
+                .setOnItemLongClickListener((recyclerView, position, v) -> {
+                    Toast.makeText(getContext(), "long clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+                    return true;
                 });
     }
 
     private void configureOnClickRecyclerView()
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
-                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener()
-                {
-                    @Override
-                    public void onItemClicked(RecyclerView recyclerView, int position, View v)
-                    {
-                        Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
-                    }
+                .setOnItemClickListener((recyclerView, position, v) ->{
+                        //Toast.makeText(getContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(getContext(), MangaDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("mangas", mData.get(position));
+                    intent.putExtras(bundle);
+                    startActivityForResult(intent, 0);
                 });
+
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mAdapter.notifyDataSetChanged();
+        Log.e(TAG, "onActivityResult: frag lib" );
+        synchronized (mRecyclerView) {
+            mRecyclerView.notifyAll();
+        }
+        getActivity().getSupportFragmentManager().beginTransaction().detach(this).attach(this).commit();
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save currently selected layout manager.
         savedInstanceState.putSerializable(KEY_LAYOUT_MANAGER, mCurrentLayoutManagerType);
         super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     * Generates Strings for RecyclerView's adapter. This data would usually come
-     * from a local content provider or remote server.
-     */
-    private void initDataset() {
-        mData = new ArrayList<>();
-
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
-        mData.add(new MangaDetail("test", R.drawable.covertest));
     }
 
 }

@@ -13,6 +13,7 @@ public class GridAutoFitLayoutManager extends GridLayoutManager {
     private boolean mWidthChanged = true;
     private int mWidth;
     private static final int sColumnWidth = 200; // assume cell width of 200dp
+    public int span;
 
     public GridAutoFitLayoutManager(Context context, int columnWidth) {
         /* Initially set spanCount to 1, will be changed automatically later. */
@@ -66,6 +67,7 @@ public class GridAutoFitLayoutManager extends GridLayoutManager {
             setSpanCount(spanCount);
             mColumnWidthChanged = false;
             mWidthChanged = false;
+            this.span = spanCount;
         }
         super.onLayoutChildren(recycler, state);
     }

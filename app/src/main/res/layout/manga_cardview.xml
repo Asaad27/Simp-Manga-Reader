@@ -24,8 +24,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:layout_gravity="center|center_horizontal"
+                android:fontFamily="monospace"
+                android:isScrollContainer="true"
                 android:text="title"
-                android:textSize="20dp" />
+                android:textColor="#000000"
+                android:textSize="12sp" />
 
             <ImageView
                 android:id="@+id/manga_image_view_cardview"

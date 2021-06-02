@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/second_toolbar"
+        android:id="@+id/second_toolbar_manga_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#F44336"
@@ -17,20 +17,23 @@
         app:titleTextColor="@color/white"
         android:outlineAmbientShadowColor="@color/purple_200"
         app:itemRippleColor="@color/yellow"
+        app:itemTextColor="@color/second_nav_color"
+        app:itemIconTint="@color/second_nav_color"
         app:menu="@menu/chapter_detail_toolbar"/>
 
     <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="25px"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:src="@drawable/covertest" />
+            android:src="@drawable/covertest"
+            android:contentDescription="@string/contentdesc"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,29 +44,37 @@
                 android:id="@+id/manga_detail_title_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="serif"
                 android:text="@string/title"
+                android:textColor="#050505"
                 android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/manga_detail_author_tv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/author"
-                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/manga_category_title_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/category"
+                android:textColor="#0E0D0D"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/manga_detail_artist_tv"
+                android:id="@+id/manga_detail_status_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/artist"
+                android:text="@string/status"
+                android:textColor="#050505"
                 android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/manga_detail_description_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textColor="#121111"
+                android:textSize="20sp"
+                android:scrollbars="vertical"/>
+
 
 
         </LinearLayout>
@@ -72,18 +83,23 @@
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/second_toolbar"
         android:layout_width="match_parent"
-
-        android:layout_height="30dp"
-        android:layout_marginTop="20px">
-
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/black"
+        android:minHeight="?attr/actionBarSize"
+        app:titleTextColor="@android:color/white"
+        app:itemTextColor="@color/second_nav_color"
+        app:itemIconTint="@color/second_nav_color"
+        app:itemRippleColor="@color/blue"
+        app:menu="@menu/manga_toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/manga_detail_rv_chapters"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20px" />
+        android:layout_marginTop="8dp" />
 
 
 </LinearLayout>
