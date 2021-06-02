@@ -1,5 +1,6 @@
 package com.simpmangareader.activities;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import static androidx.recyclerview.widget.DividerItemDecoration.HORIZONTAL;
@@ -48,6 +50,7 @@ public class Fragment_recent extends Fragment {
     private static final int SPAN_COUNT = 4;
     private static final int COLUMN_WIDTH = 130;
     private static final int DATASET_COUNT = 60;
+    protected Button bt_clear_hist;
 
 
 
@@ -75,6 +78,25 @@ public class Fragment_recent extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_recent, container, false);
 
+        //load button
+        bt_clear_hist = rootView.findViewById(R.id.bt_clear_history);
+        bt_clear_hist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferencesHelper sharedPreferencesHelper = SharedPreferencesHelper.getInstance(getActivity());
+                sharedPreferencesHelper.setSharedPreferencesHelper(recPreference_file_key, Objects.requireNonNull(getActivity()));
+                sharedPreferencesHelper.removeHistory();
+                mData = sharedPreferencesHelper.getAllRecs();
+
+                mAdapter.notifyDataSetChanged();
+                synchronized (mRecyclerView) {
+                    mRecyclerView.notifyAll();
+                }
+                reloadFragment();
+
+            }
+        });
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.fragment_recent_recycler_view);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mCurrentLayoutManagerType = LayoutManagerType.LINEAR_LAYOUT_MANAGER;
@@ -100,7 +122,13 @@ public class Fragment_recent extends Fragment {
         return rootView;
     }
 
-
+    public void reloadFragment(){
+        mAdapter = new MangaChaptersRVadapter(mData, 1);
+        // Set CustomAdapter as the adapter for RecyclerView.
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+        Log.e(TAG, "onActivityResult: frag lib" );
+    }
 
     /**
      * Set RecyclerView's LayoutManager to the one given.

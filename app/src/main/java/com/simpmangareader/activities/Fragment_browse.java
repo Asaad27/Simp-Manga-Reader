@@ -76,6 +76,7 @@ public class Fragment_browse extends Fragment {
 
         bottomNavigationView = rootView.findViewById(R.id.browse_toolbar);
         bottomNavigationView.setOnNavigationItemSelectedListener(navListener);
+        bottomNavigationView.setSelectedItemId(R.id.normal_mode);
         if (mData.size() == 0) {
             FetchMoreManga();
         }
@@ -319,28 +320,37 @@ public class Fragment_browse extends Fragment {
                     } break;
                     case R.id.latest:
                     {
-                        // TODO: change the loading mode
                         switch(fetch_mode)
                         {
                             case FETCH_NORMAL: fetch_mode = FETCH_LATEST_ASC; break;
                             case FETCH_LATEST_ASC: fetch_mode = FETCH_LATEST_DES; break;
                             case FETCH_LATEST_DES: fetch_mode = FETCH_LATEST_ASC; break;
                         }
-                        synchronized (mData)
-                        {
-                            mData.clear();
-                        }
-                        mAdapter.notifyDataSetChanged();
-                        is_loading = false;
-                        is_retrying = false;
-                        currentIndex = 0;
-                        FetchMoreManga();
+                        FetchAfterChangeMode();
+                    } break;
+                    case R.id.normal_mode:
+                    {
+                      if (fetch_mode != FETCH_NORMAL)
+                      {
+                          fetch_mode = FETCH_NORMAL;
+                          FetchAfterChangeMode();
+                      }
                     } break;
 
                 }
                 return true;
             };
 
+    private void FetchAfterChangeMode() {
+        synchronized (mData) {
+            mData.clear();
+        }
+        mAdapter.notifyDataSetChanged();
+        is_loading = false;
+        is_retrying = false;
+        currentIndex = 0;
+        FetchMoreManga();
+    }
 
 
     @Override

@@ -6,37 +6,32 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-<!--    <LinearLayout-->
-<!--        android:orientation="horizontal"-->
-<!--        android:layout_height="60dp"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:weightSum="0"-->
-<!--        android:background="@color/blue"-->
-<!--        android:padding="10dp"-->
-<!--    >-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/black"
+        android:orientation="horizontal"
+        >
 
-<!--        <ImageView-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:id="@+id/imageView"-->
-<!--            android:layout_width="338dp"-->
-<!--            android:layout_height="45dp"-->
-<!--            android:contentDescription="@string/app_name"-->
-<!--            android:src="@drawable/logomr"-->
-<!--            android:layout_marginStart="20dp" />-->
+        <TextView
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="cursive"
+            android:gravity="left"
+            android:text="Recent Chapters"
+            android:textColor="@color/white"
+            android:textSize="30dp"></TextView>
+
+        <Button
+            android:id="@+id/bt_clear_history"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="Clear"
+            />
 
 
-<!--    </LinearLayout>-->
-<!--        <com.google.android.material.bottomnavigation.BottomNavigationView-->
-<!--        android:id="@+id/second_toolbar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@color/black"-->
-<!--        android:minHeight="?attr/actionBarSize"-->
-<!--        app:titleTextColor="@android:color/white"-->
-<!--        app:itemTextColor="@color/second_nav_color"-->
-<!--        app:itemIconTint="@color/second_nav_color"-->
-<!--        app:itemRippleColor="@color/blue"-->
-<!--        app:menu="@menu/second_toolbar"/>-->
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_recent_recycler_view"

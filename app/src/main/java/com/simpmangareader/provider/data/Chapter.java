@@ -1,10 +1,6 @@
 package com.simpmangareader.provider.data;
 
-import android.graphics.Bitmap;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Chapter implements Serializable {
     public String id;
