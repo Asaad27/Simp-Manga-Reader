@@ -10,6 +10,7 @@
     <item android:title="@string/Top"
         app:showAsAction="ifRoom"
         android:visible="true"
+        android:id="@+id/normal_mode"
         android:icon="@drawable/hoticon"/>
     <item android:title="@string/alpha"
         android:id="@+id/browse_sort"
