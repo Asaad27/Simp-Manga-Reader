@@ -16,9 +16,9 @@
         <TextView
             android:layout_width="270dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_gravity="center|center_vertical"
             android:fontFamily="cursive"
-            android:gravity="left"
+            android:gravity="left|center_vertical"
             android:text="Recent Chapters"
             android:textColor="@color/white"
             android:textSize="30dp"></TextView>
