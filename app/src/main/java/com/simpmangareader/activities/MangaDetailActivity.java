@@ -95,6 +95,12 @@ public class MangaDetailActivity extends AppCompatActivity {
 
         Mangadex.FetchAllMangaEnglishChapter(manga.id,
                 (result, offset, totalSize) -> {
+                    if (totalSize == 0)
+                    {
+                        // the manga has no chapters yet
+                        Toast.makeText(this, "Manga hs no chapters", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     if (chapters == null)
                     {
                         chapters = new Chapter[totalSize];
@@ -102,9 +108,15 @@ public class MangaDetailActivity extends AppCompatActivity {
                     }
                     for (int i= offset; i < offset + result.length; ++i)
                     {
+                        int chapterPosition = i;
+                        if (!isReversed)
+                        {
+                            //some quick math to figure the actual position of the chapter
+                            chapterPosition = totalSize - i - 1;
+                        }
                         synchronized (chapters)
                         {
-                            chapters[i] = result[i - offset];
+                            chapters[chapterPosition] = result[i - offset];
                         }
                     }
                     synchronized (mAdapter) {
@@ -158,6 +170,7 @@ public class MangaDetailActivity extends AppCompatActivity {
     }
 
     public void bt_Last(MenuItem item) {
+        if (chapters == null) return;
         if (!isReversed) {
             Collections.reverse(Arrays.asList(chapters));
             isReversed = !isReversed;
@@ -166,7 +179,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
     }
     public void bt_First(MenuItem item) {
-
+        if (chapters == null) return;
         if (isReversed) {
             Collections.reverse(Arrays.asList(chapters));
             isReversed = !isReversed;
@@ -193,11 +206,14 @@ public class MangaDetailActivity extends AppCompatActivity {
     {
         ItemClickSupport.addTo(mRecyclerView, R.layout.manga_detail_chapters)
                 .setOnItemClickListener((recyclerView, position, v) -> {
-                    Log.e("TAG", "Position : "+position);
-
+                    if (chapters[position] == null)
+                    {
+                        //Chapter not available yet
+                        Toast.makeText(this, "Chapter still loading", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     /*we save the chapter as recent
                     and add cover and title of the manga to Chapter*/
-
                     //first we change the shared preference data
                     SharedPreferencesHelper spHelper = SharedPreferencesHelper.getInstance(getApplicationContext());
                     spHelper.setSharedPreferencesHelper("simpmangareader.recPreference_file_key", getApplicationContext());
