@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -73,7 +72,6 @@ public class MangaDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreate: MangaDetailActivity");
         setContentView(R.layout.activity_manga_detail);
 
         coverImage = findViewById(R.id.imageView);
@@ -220,7 +218,6 @@ public class MangaDetailActivity extends AppCompatActivity {
                     //we add root manga cover and title to chapter
                     chapters[position].MangaTitle = manga.title;
                     chapters[position].CoverBitmapEncoded = BitmapConverter.getStringFromBitmap(manga.cover);
-                    Log.e("MangaDetailActivity", "configureOnClickRecyclerView: chapter ID "+ chapters[position].id );
                     spHelper.AddOrRemove(chapters[position]);
                     startFragment(chapters[position]);
                 });

@@ -2,7 +2,6 @@ package com.simpmangareader.database;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -55,7 +54,6 @@ public class SharedPreferencesHelper {
             if (m.id.equals(manga.id)){
                 isFav = true;
                 mangas.remove(m);
-                Log.e("isFAV", "AddOrRemove: deleted new size : " + mangas.size() );
                 manga.isFav = false;  //remove manga from favs
                 break;
             }
@@ -64,7 +62,6 @@ public class SharedPreferencesHelper {
             manga.codedCover = BitmapConverter.getStringFromBitmap(manga.cover);
             mangas.add(manga);
             manga.isFav = true;
-            Log.e("isFAV", "AddOrRemove: added new size : " + mangas.size() );
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(favSharePreferenceKey, gson.toJson(mangas));
@@ -85,12 +82,10 @@ public class SharedPreferencesHelper {
         }
         if (!isRec) {
                 chapters.add(0, chapter);
-            Log.e("SpHelper chapter : ", "AddOrRemove: chapter added, size is " + chapters.size() );
                 if(chapters.size() > maxRecentSize)
                     chapters.remove(chapters.size() - 1);
         }
         else{
-            Log.e("SpHelper chapter : ", "AddOrRemove: chapter already recent, size is " + chapters.size() );
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(recSharePreferenceKey, gson.toJson(chapters));
@@ -153,12 +148,9 @@ public class SharedPreferencesHelper {
 
         }
 
-        Log.e("Sph", "getAllRecs: arraylist of size " + chapters.size() );
         Chapter[] resChapters = new Chapter[chapters.size()];
         for (int i = 0; i < chapters.size(); i++)
             resChapters[i] = chapters.get(i);
-
-        Log.e("Sph", "getAllRecs: resCHapter " + resChapters.length );
         return resChapters;
     }
 

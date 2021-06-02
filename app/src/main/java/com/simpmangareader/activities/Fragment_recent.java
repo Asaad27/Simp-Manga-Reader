@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +72,6 @@ public class Fragment_recent extends Fragment {
         //loading recents
         SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(recPreference_file_key, Objects.requireNonNull(getActivity()));
         mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllRecs();
-        Log.e(TAG, "onCreateView: size" + mData.length );
 
 
         View rootView = inflater.inflate(R.layout.fragment_recent, container, false);
@@ -127,7 +125,6 @@ public class Fragment_recent extends Fragment {
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-        Log.e(TAG, "onActivityResult: frag lib" );
     }
 
     /**

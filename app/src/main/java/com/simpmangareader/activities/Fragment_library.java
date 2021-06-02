@@ -2,7 +2,6 @@ package com.simpmangareader.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +61,6 @@ public class Fragment_library extends Fragment {
 
         SharedPreferencesHelper.getInstance(getActivity()).setSharedPreferencesHelper(favPreference_file_key, Objects.requireNonNull(getActivity()));
         mData =  SharedPreferencesHelper.getInstance(getActivity()).getAllFavs();
-        Log.e(TAG, "onCreateView: size" + mData.size() );
 
         View rootView = inflater.inflate(R.layout.fragment_library, container, false);
 
@@ -151,7 +149,6 @@ public class Fragment_library extends Fragment {
         // Set CustomAdapter as the adapter for RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-        Log.e(TAG, "onActivityResult: frag lib" );
         synchronized (mRecyclerView) {
             mRecyclerView.notifyAll();
         }

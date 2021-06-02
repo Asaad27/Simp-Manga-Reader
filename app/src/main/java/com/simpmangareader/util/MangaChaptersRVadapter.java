@@ -3,7 +3,6 @@ package com.simpmangareader.util;
 import android.graphics.Bitmap;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +63,6 @@ public class MangaChaptersRVadapter extends RecyclerView.Adapter<MangaChaptersRV
             Bitmap bitmap = BitmapConverter.getBitmapFromString(chapters[position].CoverBitmapEncoded);
             if (bitmap != null)
                 holder.getChapter_cover().setImageBitmap(bitmap);
-            else
-                Log.e(TAG, "onBindViewHolder: bitmap is null" );
         }
     }
 
