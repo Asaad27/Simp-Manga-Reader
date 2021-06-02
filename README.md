@@ -1,5 +1,8 @@
 # SimpMangaReader
 This application is a manga reader, users can fetch manga trough the app from internet, and read desired mangas.
+
+The manga is being fetched from [mangadex API](https://api.mangadex.org)
+
 ![alt text](https://github.com/Asaad27/SimpMangaReader/blob/main/bob/main/images/browse.PNG?raw=true)
 </br>
 ![GitHub Logo](https://github.com/Asaad27/SimpMangaReader/blob/main/bob/main/images/search.PNG?raw=true)
