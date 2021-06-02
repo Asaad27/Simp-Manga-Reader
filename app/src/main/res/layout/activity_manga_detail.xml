@@ -54,7 +54,7 @@
                 android:id="@+id/manga_category_title_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/category"
+                android:text="Genre"
                 android:textColor="#0E0D0D"
                 android:textSize="20sp" />
 
