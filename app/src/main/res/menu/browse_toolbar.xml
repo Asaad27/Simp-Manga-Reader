@@ -8,6 +8,7 @@
         android:icon="@drawable/newicon"
         android:id="@+id/latest"/>
     <item android:title="@string/Top"
+        android:id="@+id/Hotest"
         app:showAsAction="ifRoom"
         android:visible="true"
         android:icon="@drawable/hoticon"/>
