@@ -38,7 +38,9 @@ import javax.net.ssl.HttpsURLConnection;
 public class Mangadex
 {
 	public static final String baseURL = "https://api.mangadex.org";
-	static final int THREAD_POOL_NBR = 8;
+	static final int THREAD_POOL_MANGA_NBR = 4;
+	static final int THREAD_POOL_CHAPTER_NBR = 4;
+	static final int THREAD_POOL_PAGE_NBR = 8;
 	//create a thread pool
 	public static ExecutorService mangaExecutor;
 	public static ExecutorService chapterExecutor;
@@ -46,9 +48,9 @@ public class Mangadex
 
 	public static void init()
 	{
-		mangaExecutor = Executors.newFixedThreadPool(THREAD_POOL_NBR);
-		chapterExecutor = Executors.newFixedThreadPool(THREAD_POOL_NBR);
-		pagesExecutor = Executors.newFixedThreadPool(THREAD_POOL_NBR);
+		mangaExecutor = Executors.newFixedThreadPool(THREAD_POOL_MANGA_NBR);
+		chapterExecutor = Executors.newFixedThreadPool(THREAD_POOL_CHAPTER_NBR);
+		pagesExecutor = Executors.newFixedThreadPool(THREAD_POOL_PAGE_NBR);
 	}
 
 	/**
@@ -339,10 +341,6 @@ public class Mangadex
 									handler.post(() -> successCallback.onComplete(finalI, image));
 								}
 							}
-							else
-							{
-								System.out.println(reqURL);
-							}
 						} catch (IOException e) {
 							e.printStackTrace();
 							handler.post(() -> failedCallback.onError(e, finalI));
@@ -377,10 +375,6 @@ public class Mangadex
 								Bitmap image = BitmapFactory.decodeStream(in);
 								handler.post(() -> successCallback.onComplete(image));
 							}
-						}
-						else
-						{
-							System.out.println(reqURL);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
