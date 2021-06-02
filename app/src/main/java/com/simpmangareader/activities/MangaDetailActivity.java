@@ -33,7 +33,6 @@ import com.simpmangareader.util.MangaChaptersRVadapter;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 import static com.simpmangareader.database.SharedPreferencesHelper.favPreference_file_key;
@@ -151,9 +150,9 @@ public class MangaDetailActivity extends AppCompatActivity {
            spHelper.AddOrRemove(manga);
            isPressedFav = !isPressedFav;
            if (isPressedFav)
-                item.setIcon(R.drawable.hoticon);
+                item.setIcon(R.drawable.bookmarkicon1);
            else
-               item.setIcon(R.drawable.outline_favorite_white_18);
+               item.setIcon(R.drawable.bookmarkicon0);
 
 
     }
@@ -184,7 +183,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         menu = bottomNavigationView.getMenu();
         menu.findItem(R.id.bt_bookmark).setCheckable(true);
         if(manga.isFav){
-            menu.findItem(R.id.bt_bookmark).setIcon(R.drawable.hoticon);
+            menu.findItem(R.id.bt_bookmark).setIcon(R.drawable.bookmarkicon1);
         }
         isPressedFav = manga.isFav;
     }
