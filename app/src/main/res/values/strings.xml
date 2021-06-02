@@ -13,6 +13,6 @@
     <string name="chapter_details">Chapter details</string>
     <string name="contentdesc">Manga cover</string>
     <string name="Latest">Latest</string>
-    <string name="Top">Top rated</string>
+    <string name="Top">Popular</string>
     <string name="alpha">A - Z</string>
 </resources>

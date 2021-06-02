@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:title="@string/Latest"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:visible="true"
         android:icon="@drawable/newicon"
         android:id="@+id/latest"/>
     <item android:title="@string/Top"
-        android:id="@+id/normal_mode"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:visible="true"
+        android:id="@+id/normal_mode"
         android:icon="@drawable/hoticon"/>
     <item android:title="@string/alpha"
         android:id="@+id/browse_sort"
