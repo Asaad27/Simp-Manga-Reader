@@ -118,7 +118,7 @@ public class Fragment_library extends Fragment {
 
     }
 
-    //TODO(me): add remove from fav dialog
+
     private void configureOnLongClickRecyclerView() {
         ItemClickSupport.addTo(mRecyclerView, R.layout.activity_main)
                 .setOnItemLongClickListener((recyclerView, position, v) -> {

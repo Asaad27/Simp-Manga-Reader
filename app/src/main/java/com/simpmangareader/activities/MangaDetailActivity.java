@@ -52,6 +52,7 @@ public class MangaDetailActivity extends AppCompatActivity {
     private TextView categoryText;
     private TextView statusText;
     private TextView descriptionText;
+    public boolean isReversed = true;
 
     MenuItem bt_bookmark;
     Menu menu;
@@ -73,8 +74,9 @@ public class MangaDetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: MangaDetailActivity");
         setContentView(R.layout.activity_manga_detail);
-        //TODO: maybe adjust the layout and change font sizes so that the texts are visible
+
         coverImage = findViewById(R.id.imageView);
         titleText = findViewById(R.id.manga_detail_title_tv);
         categoryText = findViewById(R.id.manga_category_title_tv);
@@ -89,15 +91,8 @@ public class MangaDetailActivity extends AppCompatActivity {
         descriptionText.append((Html.fromHtml("<em> " +manga.description+ "</em>")));
         descriptionText.setMovementMethod(new ScrollingMovementMethod());
 
-        //TODO : change bookmark_button icon onclick
-        /*bottomNavigationView = findViewById(R.id.second_toolbar_manga_detail);
-        menu = bottomNavigationView.getMenu();
-        System.out.println("mangaisfav : " + manga.isFav);
-        menu.findItem(R.id.bt_bookmark).setCheckable(true);
-        menu.findItem(R.id.bt_bookmark).setEnabled(true);
-        menu.findItem(R.id.bt_bookmark).setChecked(manga.isFav);*/
 
-        isPressedFav = manga.isFav;
+        setFavButton();
 
         Mangadex.FetchAllMangaEnglishChapter(manga.id,
                 (result, offset, totalSize) -> {
@@ -151,68 +146,48 @@ public class MangaDetailActivity extends AppCompatActivity {
     }
     public void bt_bookmark(MenuItem item) {
 
-
            SharedPreferencesHelper spHelper = SharedPreferencesHelper.getInstance(getApplicationContext());
            spHelper.setSharedPreferencesHelper(favPreference_file_key, getApplicationContext());
            spHelper.AddOrRemove(manga);
            isPressedFav = !isPressedFav;
-           item.setChecked(isPressedFav);
+           if (isPressedFav)
+                item.setIcon(R.drawable.hoticon);
+           else
+               item.setIcon(R.drawable.outline_favorite_white_18);
 
 
     }
+
     public void bt_Last(MenuItem item) {
-        try {
-            Arrays.sort(chapters, new Comparator<Chapter>(){
-
-                @Override
-                public int compare(Chapter o1, Chapter o2) {
-                    int res = -1;
-                    try {
-                        res = (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
-                    }
-                    catch (Exception e){
-                        Log.e(TAG, "compare: exception " + e );
-                        return -1;
-                    }
-                    return (int) (Double.parseDouble(o2.chapterNumber) - Double.parseDouble(o1.chapterNumber));
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+        if (!isReversed) {
+            Collections.reverse(Arrays.asList(chapters));
+            isReversed = !isReversed;
         }
         item.setChecked(true);
         mAdapter.notifyDataSetChanged();
     }
     public void bt_First(MenuItem item) {
 
-        try {
-            Arrays.sort(chapters, new Comparator<Chapter>(){
-
-                @Override
-                public int compare(Chapter o1, Chapter o2) {
-                    int res = -1;
-                    try {
-                        res = (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
-                    }
-                    catch (Exception e){
-                        Log.e(TAG, "compare: exception " + e );
-                        return 1;
-                    }
-
-                    return (int) (Double.parseDouble(o1.chapterNumber) - Double.parseDouble(o2.chapterNumber));
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            return;
+        if (isReversed) {
+            Collections.reverse(Arrays.asList(chapters));
+            isReversed = !isReversed;
         }
         mAdapter.notifyDataSetChanged();
         item.setChecked(true);
     }
 
-
+    public void setFavButton(){
+        SharedPreferencesHelper spHelper = SharedPreferencesHelper.getInstance(getApplicationContext());
+        spHelper.setSharedPreferencesHelper(favPreference_file_key, getApplicationContext());
+        manga.isFav = spHelper.isFav(manga);
+        bottomNavigationView = findViewById(R.id.second_toolbar_manga_detail);
+        menu = bottomNavigationView.getMenu();
+        menu.findItem(R.id.bt_bookmark).setCheckable(true);
+        if(manga.isFav){
+            menu.findItem(R.id.bt_bookmark).setIcon(R.drawable.hoticon);
+        }
+        isPressedFav = manga.isFav;
+    }
 
 
     private void configureOnClickRecyclerView()
@@ -220,7 +195,6 @@ public class MangaDetailActivity extends AppCompatActivity {
         ItemClickSupport.addTo(mRecyclerView, R.layout.manga_detail_chapters)
                 .setOnItemClickListener((recyclerView, position, v) -> {
                     Log.e("TAG", "Position : "+position);
-                    //Toast.makeText(getBaseContext(), "short clicked \"Position : \""+position, Toast.LENGTH_LONG).show();
 
                     /*we save the chapter as recent
                     and add cover and title of the manga to Chapter*/
@@ -275,6 +249,7 @@ public class MangaDetailActivity extends AppCompatActivity {
         newFragment.setArguments(bundle);
         newFragment.show(ft, "slideshow");
     }
+
 }
 
 
