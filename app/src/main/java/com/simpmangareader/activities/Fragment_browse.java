@@ -333,6 +333,7 @@ public class Fragment_browse extends Fragment {
                         mAdapter.notifyDataSetChanged();
                         is_loading = false;
                         is_retrying = false;
+                        currentIndex = 0;
                         FetchMoreManga();
                     } break;
 
