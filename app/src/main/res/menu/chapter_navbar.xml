@@ -5,11 +5,11 @@
     <item
         android:title="Previous"
         app:showAsAction="ifRoom"
-        android:id="bt_prev"
+        android:id="@+id/bt_prev"
         android:icon="@drawable/backarrow"/>
     <item
         android:title="Next"
         app:showAsAction="ifRoom"
-        android:id="bt_next"
+        android:id="@+id/bt_next"
         android:icon="@drawable/nextarrow"/>
 </menu>
