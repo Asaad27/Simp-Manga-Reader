@@ -195,6 +195,8 @@ public class Fragment_search extends Fragment {
                     Intent intent = new Intent(getContext(), MangaDetailActivity.class);
                     Bundle bundle = new Bundle();
                     synchronized (mData) {
+                        if(position == -1)
+                            position += 1;
                         if (mData.get(position) == null) return;
                         bundle.putParcelable("mangas", mData.get(position));
                     }
